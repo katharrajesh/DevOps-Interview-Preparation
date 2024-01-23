@@ -1,0 +1,112 @@
+http://notepad.pw/syne-aws-feb
+https://galaxy.ansible.com/
+https://github.com/thechetantalwar/ansible-workshop
+
+
+
+  573  apt-get update
+  574  apt install ansible
+  575  ansible --version
+  576  ping 0
+  577  ssh-copy-id -i root@172.31.7.184
+  578  ssh-copy-id  root@172.31.7.184
+  579  ping 0
+  580  ll
+  581  cd /root/
+  582  ll
+  583  cd .ssh/
+  584  ll
+  585  cat id_rsa.pub
+  586  cat id_rsa
+  587  cat id_rsa.pub
+  588  ssh root@172.31.7.184
+  589  cd
+  590  ping 0
+  591  ssh root@172.31.7.184
+  592  ip r
+  593  ping 0
+  594  vim /etc/ansible/hosts
+  595  ansible web -m ping
+  596  ping 0
+  597  ansible web -a "ls /tmp"
+  598  ansible web -a "mkdir /tmp/rajesh"
+  599  ansible web -a "ls -ld /tmp/rajesh"
+  600  ping 0
+  601  ansible web -m user -a "name=rajesh state=present"
+  602  ping 0
+  603  ansible web -m apt -a "name=ntp state=present"
+  604  ansible web -m apt -a "name=ntpd state=present"
+  605  ansible web -m apt -a "name=gcc state=present"
+  606  ansible web -m file -a "name=new state=present"
+  607  ansible web -m file -a "name=/tmp/new state=touch"
+  608  ping 0
+  609  ansible web -m file -a "name=/tmp/neestw state=directory"
+  610  ping 0
+  611  ansible web -m file -a"name=/tmp/syne state=directory mode=0777"
+  612  vim play1.yaml
+  613  ansible-playbook play1.yaml --check
+  614  ansible-playbook play1.yaml --syntax
+  615  ansible-playbook play1.yaml
+
+---
+- hosts: web									=> Server group name [ /etc/ansible/hosts ]
+  tasks:										=> Mention the task for execution
+        - name: Installing apache2				=> Task name. We can mention anything
+          apt:									=> Module name
+                name: apache2					=> Package name
+                state: present					=> present means install1
+        - name: Check service status			=> Mention task name
+          service:								=> Module name
+                name: apache2					=> Service name
+                state: started					=> Status should be started
+        - name: Copying file					=> Task name
+          copy:									=> Module name
+                  src: index.html				=> Source location
+                  dest: /var/www/html/			=> destination name
+				  
+				  
+
+---
+- hosts: web
+  tasks:
+        - name: Installing apache2
+          apt:
+                name: apache2
+                state: latest
+        - name: Copying file
+          copy:
+                  src: index.html
+                  dest: /var/www/html/
+          notify: Check service restart			=> If we perform any changes in index.html file then it will notify us and execute handlers task which is mention below		
+  handlers:										=> If notify occure then only we can execute below logic. If index.html did not have any changes then handlers will not execute
+        - name: Check service restart
+          service:
+                name: apache2
+                state: restarted
+				
+				
+# Install jenkins				
+
+---
+- hosts: web
+  tasks:
+    - name: installing jdk
+      apt:
+        update_cache: true
+        name: default-jdk
+        state: present
+    - name: adding key
+      apt_key:
+        url: https://pkg.jenkins.io/debian-stable/jenkins.io.key
+        state: present
+    - name: adding repo path
+      shell: echo deb https://pkg.jenkins.io/debian-stable binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list
+    - name: install jenkins
+      apt:
+        update_cache: true
+        name: jenkins
+        state: present
+    - name: make sure jenkins is running
+      service:
+        name: jenkins
+        state: started

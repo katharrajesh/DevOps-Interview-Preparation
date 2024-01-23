@@ -1,0 +1,127 @@
+## Jenkins ##
+
+1. What is Jenkins Shared Librery
+	=> In Jenkins, a Shared Library is a way to define and reuse pipeline code in multiple Jenkins pipelines. It allows you to 
+		create a common set of reusable code that can be shared across different Jenkins pipelines, making it easier to 
+		maintain and update your pipeline scripts.
+		
+2. If anyone of the steps got fail in pipeline then how will continue it
+	=> you can handle failures and specify how the pipeline should proceed even if a particular step fails. You can use the 
+		catch or finally blocks in scripted pipelines or the post block in declarative pipelines to define actions that should 
+		be taken after the completion of the pipeline, depending on the build result.
+
+3. What is parallel stage in pipeline
+	=> In Jenkins pipelines, the parallel directive allows you to execute multiple stages concurrently, taking advantage of 
+		parallelism to speed up the overall pipeline execution. This can be particularly useful when you have independent tasks
+		or tests that can run simultaneously. Please check example below :
+		
+4. Stash and unstash in jenkins
+	=> In Jenkins pipelines, stash and unstash are used to temporarily save and retrieve files, directories, or specific 
+		artifacts during the execution of a pipeline. This can be useful when you need to transfer files between different 
+		stages of the pipeline or between different nodes (Jenkins agents).
+		
+5. What is code quality and code coverage in sonarqube
+	=> In summary, while code quality focuses on the overall health and maintainability of the code, 
+		code coverage provides insights into how well the code is tested.
+       Code Quality:
+		Code quality refers to how well-written and maintainable the source code of a software project is.
+		
+		Code Smells: Indications of potential issues in the code that may lead to problems in the future.		
+		Coding Standards: Adherence to established coding standards and best practices.		
+		Code Duplication: Identifying redundant or duplicated code.		
+		Security Vulnerabilities: Detection of potential security risks in the code.		
+		Complexity: Assessment of code complexity, such as cyclomatic complexity.
+
+	   Code Coverage:
+		Code coverage is a metric that measures the percentage of code that is executed by automated tests. It indicates how 
+		much of your source code has been exercised by your test suite. A higher code coverage percentage generally means that 
+		more of the code has been tested, but it doesn't guarantee the absence of bugs.
+
+		Line Coverage: Percentage of executable lines of code covered by tests.
+		Branch Coverage: Percentage of decision points (branches) in the code that have been taken during testing.
+		Function/Method Coverage: Percentage of functions or methods that have been called during testing.
+
+
+6. Execute multiple shell cmd in pipeline
+	=> sh '''
+	   '''
+7. If declarative pipeline fail and want to continue next step/stage then ?
+	=> using " catchError "  OR try and catch exception block. 
+
+8. diff between declarative and script pipeline
+	=>  The syntax for Scripted Pipeline is based on Groovy scripting language, 
+		while the syntax for Declarative Pipeline is based on YAML syntax.
+	
+		Declarative Pipeline syntax
+				=> pipeline {
+					agent any 
+					stages {
+						stage('Build') { 
+							steps {
+								// 
+							}
+						}
+						stage('Test') { 
+							steps {
+								// 
+							}
+						}
+						stage('Deploy') { 
+							steps {
+								// 
+							}
+						}
+					}
+				}
+				
+		Scripted Pipeline Syntax
+					=> node {
+						stage('Build') {
+							//
+						}
+						stage('Test') {
+							//
+						}
+						stage('Deploy') {
+							//
+						}
+					}
+			
+3. What is parallel stage in pipeline Example
+
+pipeline {
+    agent any
+    
+    stages {
+        stage('Parallel Stage') {
+            parallel {
+                stage('Task A') {
+                    steps {
+                        echo 'Running Task A'
+                        // Add steps for Task A
+                    }
+                }
+                stage('Task B') {
+                    steps {
+                        echo 'Running Task B'
+                        // Add steps for Task B
+                    }
+                }
+                stage('Task C') {
+                    steps {
+                        echo 'Running Task C'
+                        // Add steps for Task C
+                    }
+                }
+            }
+        }
+        
+        stage('Final Stage') {
+            steps {
+                echo 'Running Final Stage'
+                // Add steps for the final stage
+            }
+        }
+    }
+}
+

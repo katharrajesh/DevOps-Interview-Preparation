@@ -1,0 +1,137 @@
+===================== Terraform GIT repo ======================
+https://github.com/kul-terraform
+
+=====================  Terraform Installation Ubuntu 22.04 ========================
+# wget -qO - terraform.gpg https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/terraform-archive-keyring.gpg
+# sudo echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/terraform-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" > /etc/apt/sources.list.d/terraform.list
+# sudo apt-get update && sudo apt-get install terraform
+# terraform -install-autocomplete	=> Shell Tab-completion [ it is necessary to restart your shell or to re-read its profile script ]
+# which terraform
+# terraform -v
+# apt policy terraform		=> Check available version
+# sudo apt install terraform=1.2.4		=> Install latest version
+
+==========================  Terraform Basic Commands  ============================
+# terraform plan                                  # plan
+# terraform apply                                 # shortcut for plan & apply - avoid this in production
+# terraform plan -out out.terraform      		  # terraform plan and write the plan to out file
+# terraform apply out.terraform            		  # apply terraform plan using out file
+# terraform show                                  # show current state
+# cat terraform.tfstate                           # show state in JSON format
+# terraform apply -auto-approve					  # It will approve yes request while execute apply command.	
+# terraform state list							  # It will list all resource created by terraform script	
+# terraform output								  # Help to print output like server IP etc	
+# terraform apply -var server=2					  # We can assign variable at run time
+# terraform validate 							  # To check terraform file syntax and validation. Logout & Login Again.
+# terraform destroy 							  # Delete all resource which is created from terraform
+# terraform destroy --auto-approve				  #It will approve yes request while execute destroy command.	 	
+# terraform destroy -target <resource_type>.<local_username>	# Delete only target resource
+# terraform fmt									  # It will arrange proper alignment in terraform files
+# terraform workspace new dev			# It will create dev workspace
+# terraform workspace select dev		# It will select dev workspace
+# terraform workspace show			# It will show current workspace
+
+===========================  Terraform Basic Theory  ==============================
+Simple variable : String, Number & Bool
+Complex type : List(type), Set(type), Map(type), Object({Attri. Name=Type, ......}), Tuple([Type, ....])
+
+=========================Launch Sample EC2 in AWS =================================
+provider "aws" {
+        access_key = "ENTER_YOUR_KEY"
+        secret_key = "ENTER_YOUR_KEY"
+        region     = "ap-south-1"
+}
+
+resource "aws_instance" "example" {
+        ami             = "ami-00e24e2d9b2d70f5c"
+        instance_type   = "t4g.micro"
+}
+
+=====================================================================================
+provider "aws" {
+        region = "ap-south-1"
+}
+
+############### Create S3 Bucket ##################
+
+resource "aws_s3_bucket" "bucket_for_backend" {
+        bucket = "bucket-created-by-terrafrom-rajeshk"
+        acl = "private"
+        tags = {
+                Name = var.Name
+                }
+        versioning {
+                enabled = true
+                }
+
+}
+
+############### Launch EC2 Server ################
+
+resource "aws_instance" "ec2_server"{
+        ami = "ami-0eeb03e72075b9bcc"
+        instance_type = "t2.micro"
+        tags = {
+                Name = var.Name
+                Day = 1
+        }
+}
+
+############## Create EBS Volume ##################
+
+resource "aws_ebs_volume" "ebs_volume"{
+    count = 1
+        availability_zone = "ap-south-1a"
+        size              = 4
+        tags = {
+                Name = var.Name
+                Day = 1
+        }
+}
+
+############# Attached EBS Volume ################
+
+resource "aws_volume_attachment" "ebs_volume_attachment"{
+        count = 1
+        volume_id = "vol-0cef9a6d982214f73"
+        instance_id =  "i-09ce1c9b614b97a41"
+        skip_destroy = true
+        device_name = "/dev/sdf"
+}
+
+
+############### Format vol and mount on opt  [ Created new file ] ###########
+
+resource "null_resource" "mountEBS_on_EC2" {
+        count = 1
+        provisioner  "remote-exec" {
+                connection {
+                        type = "ssh"
+                        user = "ec2-user"
+                        host = "aws_instance.ec2_server[count.index].public_ip"
+                        private_key = file("test-key.pem")
+                }
+                inline = [
+                        "sudo mkfs -t ext4 /dev/xvdf",
+                        "sudo mount /dev/xvdf /opt",
+                        "sudo chown ec2-user:ec2-user /opt",
+                        "echo ${aws_instance.ec2_server[count.index].public_dns} > /opt/dns"
+                        ]
+        }
+}
+
+
+
+=======================================================================================
+variable "servers"{
+	default = 1
+}
+variable "availability_zone" {
+	default = "us-east-2c"
+}
+variable "day" {
+	default = 1
+}
+variable "name" {
+	default = "kul-terraform-workshop"
+}

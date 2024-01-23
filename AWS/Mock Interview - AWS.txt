@@ -1,0 +1,122 @@
+
+
+1. Tell me about yourself?
+2. What are the day to day roles and responsibilities
+3. Which tools you are using in project in terms of ticket system, deployment and infrastructure.
+4. What is the main task or troubleshooting you have done in career?
+5. What are the main skills do you have as of now?
+6. What process you should follow before creating any infrastructure in project.
+7. What AWS services you are familiar.
+8. Lets say you are the architect and you are managing entire projects on AWS.
+   - now you have task to optimize infrastructure cost.
+   - So what process and action you can take to reduce infrastructure cost.
+9. What is the best security practices to follow in AWS.   
+   
+
+### EC2
+
+1. What is the use cases for EC2
+2. Lets say I have received one request to create ec2 and install web server like nginx
+   - so what information you needed before provision this setup.
+3. I want to install nginx or apache web server when my ec2 launch. so how do i configure it.
+4. Lets say you have received request to migrate ec2 instance to another aws account.
+  - how you can migrate. what is the best approach to migrate ec2 instance.
+5. What are the checks for ec2 instance
+6. I want to launch ec2 instance with fixed private ip address?
+7. What is the difference between ec2 ami and snapshot
+8. Lets my ec2 instance private key lost. then how i can connect to ec2 instance. its a production server.
+
+
+## EBS Volume
+
+1. My production server disk space getting full. how i can increase the space without taking any down time.
+2. if my server disk space getting full but during inspection i found that 
+  - all application code size are find just web server logs consuming disk space
+  - so without using rm command how to clear those logs and make disk space free.
+
+
+
+
+## Load Balancer
+
+1. How to handle large amount of traffic for specific period of time during events.
+  - or what is pre warming concept.
+
+2. How many type of targets we can configure for load balancer
+3. Lets say I have 2 ec2 instance behind load balancer
+ - I want to configure like for specific user request should go to specifc server for some period of time.
+3. How to find load balancer ip.
+4. What is the default load balancing method.
+
+
+## IAM 
+
+1. I have 100 users in my organization
+  - I want to give full permission for for some users lets say for 50 user
+  - for rest of the users limited access
+  - what will be best way to configure this.
+2. What is the difference between AWS root user and power user 
+3. What is the difference between iam user and role
+
+
+## S3 bucket
+
+1. I want my s3 bucket accessible for only specifc network.
+  - how to configure this.
+2. What is the default storage class for s3 bucket.
+3. I want to give my s3 bucket data access for only limited time.
+  - how we can configure this setup
+4. How to host static website by using s3 bucket and cloudfront
+  - Here make sure entire bucket should not be public accessible.
+  
+ 
+## VPC
+Network Address Translation (NAT)
+Virtual Private Cloud (VPC)
+
+1. What is VPC
+2. Why should not we use default VPC
+3. Lets say we got the requirement to design VPC for infrastructure
+	- How will you design best VPC architecture
+	- What component will you consider for better security
+4. When we create VPC, What component will create auto with vpc
+5. What is vpc peering and its use
+6. What is the process to create vpc peering
+7. If you have one EC2 instance in private subnet then
+	- How will you patch and upgrade using internet
+	- How will you provide internet for that
+8. What is public and private subnet
+9. How to define its public or private
+10. When we create EC2 it will get default public IP. So, How to disable that
+	-> Edit subnet settings => Enable auto-assign public IPv4 address
+11. How many IP address reserve for each subnet 
+	=> AWS reserves five IP addresses per subnet
+		10.0.0.0: Network address.
+
+		10.0.0.1: for the VPC router.	
+
+		10.0.0.2: The IP address of the DNS server
+
+		10.0.0.3: for future use.
+
+		10.0.0.255: Network broadcast address.
+		
+12. What is DHCP in VPC	
+	=> DHCP (Dynamic Host Configuration Protocol)
+
+13. Diff between NACL and SG
+
+14. What is VPC endpoint
+
+15. Any one of the services quota get exceed  then how to resolve it or any action 
+
+16. I have an on prem data center and want private connectivity between AWS network to on prem. How to configure it and which services
+	-> either VPN (Virtual Private Network) or AWS Direct Connect.
+
+17. IP VPC OR subnet IP range got occupy by all server then what action do we need to perform.	
+18. Explain the purpose of a VPC's route tables. How are they associated with subnets?
+19. What is a Virtual Private Network (VPN) connection in the context of AWS VPC? How does it differ from Direct Connect?
+20. What is VPC Flow Logs, and why would you enable them?
+21. What is AWS PrivateLink, and how does it enhance security in a VPC?
+22. Describe the process of migrating an EC2 instance from one VPC to another.
+23. What are the different IPv6 addressing options and features available in VPC?

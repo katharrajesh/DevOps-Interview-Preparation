@@ -1,0 +1,5 @@
+## GitHub Action ##
+Explain your knowledge on GitHub Action
+What is GitHub Action
+code owners in GitHub action
+how to crate a workflow to trigger automatically  [ answer is event ]

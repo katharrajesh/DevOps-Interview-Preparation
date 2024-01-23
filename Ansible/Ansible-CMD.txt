@@ -1,0 +1,479 @@
+-- https://gitlab.com/synechron-ansible-automation-jan-2022/reference-guide
+-- https://thinknyx.com/ansible-cheatsheet/
+
+Upto till, We can install ansible controller [ Master ] setup only on Linux flavour.
+=========== Install Ansible on Ubuntu 20.04 ===========
+-- On Master & Node
+apt-get update
+sudo apt install software-properties-common
+sudo add-apt-repository --yes --update ppa:ansible/ansible
+sudo apt install ansible -y
+
+-- On Master
+sudo hostnamectl set-hostname Ansible-Master
+vim /etc/hosts		[ <IP>  <hostname>  ]
+init 6
+
+--On Node
+sudo hostnamectl set-hostname Ansible-Node
+vim /etc/hosts		[ <IP>  <hostname>  ]
+init 6
+
+========== Normal User creation on EC2 ============
+-- On Node
+useradd -m node
+passwd node
+usermod -s /bin/bash node
+vim /etc/ssh/sshd_config	[ modify "PasswordAuthentication" to yes ]
+sudo service sshd restart
+vim /etc/sudoers		[ add line " node   ALL=(ALL:ALL) NOPASSWD:ALL " ]
+
+-- On Master
+vim /etc/hosts		[ add node server entry in master host file ]
+ping node
+ssh-keygen		[ 3 times press enter key ]
+ssh-copy-id node@node
+ssh node@node
+
+=============== Inventory Parameter ================
+ansible_host - IP range
+ansible_connection - ssh/winrm/localhost
+ansible_port - 22/5986
+ansible_user - root/administrator
+ansible_ssh_pass - Password
+
+** We can check yaml file syntax from " http://www.yamllint.com/ ".
+
+=================== Ansible Commands ===============
+ansible-doc <module_name>		=> help doc
+ansible <host> -a <command>
+ansible <host> -m <module>
+ansible <host/group> -m <module> -i <inventory-file-path>
+ansible <host> -m <module_name> -a <attributes>
+ansible <host> -m <module_name> -a <Task/Attribute> --become -i <inventory-file-path>		[ --become => means sudo permissions ]
+ansible <host> -m setup		=> To get FACT Gather details
+ansible-doc <module_name>	=> module help
+
+Example : ansible all -a "mkdir abc" -i inventory.txt
+ansible node1 -m user -a "name=user state=present" --become -i inventory.txt
+====================================================================
+Lab:
+Create a group named development on the system
+Create a user named dev with uid 2234, shell should be /bin/bash and user should belong to development group
+Create a directory /tmp/demodir, owner of file should be dev user
+Create a file named demofile in the directory created in above step, owner of file should be dev, it should belong to development group and permissions of file should be 0755
+Answer:
+ansible node1 -m group -a "name=development state=present"
+ansible node1 -m user -a "name=dev state=present uid=2234 shell=/bin/bash group=development"
+ansible node1 -m file -a "name=/tmp/demodir state=directory owner=dev"
+ansible node1 -m file -a "name=/tmp/demodir/demofile state=touch owner=dev mode=0755 group=development" 
+
+Lab
+
+
+Install package with the name called apache2
+Make sure the service named apache2 is running
+Update the default web page, which apache2 is serving. The location for default webpage - /var/www/html/index.html
+Answer:
+ansible node2 -m apt -a  "name=apache2 state=present" --become -i inventory.txt
+ansible node2 -m copy -a "src=index.html dest=/var/www/html" --become -i inventory.txt
+
+
+Lab4 - Create a playbook for the below
+
+Create a group named development on the system
+Create a user named dev with uid 2234, shell should be /bin/bash and user should belong to development group
+Create a directory /tmp/demodir, owner of file should be support user
+Create a file named demofile in the directory created in above step, owner of file should be support, it should belong to development group and permissions of file should be 0755
+Install a package named ntp
+Answer:
+---
+- name: Task for Lab4
+  hosts: all
+  become: yes
+  tasks:
+     - name: Create Development Group on both node
+       group:
+          name: development
+          state: present
+
+     - name: Create dev user on both node
+       user:
+         name: dev
+         state: present
+         uid: 2234
+         shell: /bin/bash
+         group: development
+
+
+     - name: Create support user on both node
+       user:
+         name: support
+         state: present
+         shell: /bin/bash
+
+     - name: Create Directory
+       file:
+           name: /tmp/demodir
+           state: directory
+           owner: support
+
+     - name: Create file
+       file:
+           name: /tmp/demodir/demofile
+           state: touch
+           owner: support
+           group: development
+           mode: 0755
+
+     - name: Install package
+       apt:
+         name: ntp
+         state: present
+		 
+		 
+Lab5 - Create a playbook for below tasks
+
+Install package with the name called apache2
+Make sure the service named apache2 is running
+Update the default web page, which apache2 is serving. The location for default webpage - /var/www/html/index.html		 
+Answer:
+---
+- name: Configure WEB server
+  hosts: all
+  become: yes
+  tasks:
+     - name: Install Apache2 package on Ubuntu 20.04
+       apt:
+          name: apache2
+          state: present
+          update_cache: yes
+     - name: Make apache2 service running
+       service:
+         name: apache2
+         enabled: true
+     - name: Copy index file to node server
+       copy:
+         src: index.html
+         dest: /var/www/html/index.html
+		 
+Lab
+Make sure apache2 is installed and running. Update the default web page which apache2 is serving at /var/www/html/index.html
+The content of updated web page should be like the one specified below
+Hello All
+This machine's hostname is .......
+The IPv6 of this machine is ........
+The OS Distribution and Release Number of this machine is ............
+** Update above playbook **
+ - name: Copy index file to node server
+       template:
+         src: index.html
+         dest: /var/www/html/index.html
+** Update index.html file **
+<h3>
+Hello All<br>
+This machine's hostname is {{ ansible_hostname }}<br>
+The IPv6 of this machine is {{ ansible_all_ipv6_addresses[0] }}<br>
+The OS Distribution and Release Number of this machine is {{ ansible_distribution }}:{{ ansible_distribution_version }}<br>
+</h3>
+
+
+=================== notify & handlers ===============
+---
+- name: Handler1
+  hosts: all
+  become: yes
+  tasks:
+    - name: Task1
+      copy:
+        content: "Hello Task1"
+        dest: /tmp/demo1
+        notify: restart ntp
+
+    - name: Task2
+      copy:
+        content: "Hello Task2"
+        dest: /tmp/demo2
+        notify: restart apache2
+
+    - name: Task3
+      copy:
+        content: "Hello Task3"
+        dest: /tmp/demo3
+
+  handlers:
+    - name: restart ntp
+      service:
+        name: ntp
+        state: restarted
+
+  handlers:
+    - name: restart apache2
+      service:
+        name: apache2
+        state: restarted
+
+
+=================== Ansible Playbook =================
+
+Syntax : ansible-playbook <playbook_name> --syntax 	[ check syntax ]
+Syntax : ansible-playbook <playbook_name> --check	[ dry run ]
+Syntax : ansible-playbook <playbook_name>			[ execute playbook ]
+Syntax : ansible-playbook <playbook_name> --ask-sudo-pass		[ module name is "sudo: yes" mention in playbook ]
+Syntax : ansible-playbook <playbook_name> --extra-vars "var1=<var_name>"	=> commandline argument
+=================== Ansible Modules ==================
+System => 	
+			- User
+			- Group
+			- Hostname
+			- Iptables
+			- Lvg
+			- Lvol
+			- Make
+			- Mount
+			- Ping
+			- Timezone
+			- Systemd
+			- Service
+Commands =>
+			- Command
+			- Expect
+			- Raw
+			- Script
+			- Shell
+Files -
+			- Acl
+			- Archive
+			- Copy
+			- File
+			- Find
+			- Lineinfile
+			- Replace
+			- Stat
+			- Template
+			- Unarchive
+Database -
+			- Mongodb
+			- Mssql
+			- Mysql
+			- Postgresql
+			- Proxysql
+Cloud -
+			- Amazon
+			- Azure
+			- Google
+			...other cloud platform too
+Windows -
+			- Win_copy
+			- Win_command
+			- Win_domain
+			- Win_file
+			- Win_msg
+			- Win_msi
+			- Win_ping
+			- Win_shell
+			- Win_service
+			And many more command
+many more....
+
+=================== Ansible File Seperation ==================
+-- Inventory File
+Declar a ansible host and password in variable form as follow :
+1. Create a folder with a name as "host_vars"
+2. Create a file under above folder with name as <server_host_name>.yaml
+3. Declar a variable as follow
+	ansible_host: 192.168.1.14
+	ansible_ssh_pass: P@$$w0rd
+
+1. If we want to create a group for multiple server then create a folder name as "group_vars"
+2. Create a file with a name as <group_host_name>.yaml
+
+=================== Ansible Tasks Seperation ==================
+1. Create a "tasks" folder to sepereate task and create a yaml file there with all related task operation.
+2. Use include parameter to declare task file in playbook.yaml file. 
+
+=================== Ansible Variables ==================
+Syntax in playbook declare : 
+	variable_name: variable_value
+Syntax to declare variable in inventory file :
+	variable_name=variable_value	=> [ with inventory syntax and add var syntax ]
+
+Syntax to print var in playbook	:
+	{{variable_name}} =>[ in sentense ]
+	'{{variable_name}}' =? [ without sentense ]
+	
+=================== Ansible Conditional ==================	
+***- Simple
+Syntax : when:  <<condition>>
+Syntax : when:  <<condition>>  and 
+				<<condition>>
+Syntax : when: 	<<condition>> 	or
+				<<condition>>			
+Example: when: ansible_os_family == "Debian"
+Example: when: ansible_os_family == "Debian" and
+			   ansible_distribution_version == "16.04"	
+Example: when: ansible_os_family == "Redhat"  or
+               ansible_os_family == "SUSE"			   
+Example:  -
+            command: 'echo "I am a Child"'
+			when: 'age =< 18'			   
+			   
+***- Loops
+Syntax : loop: "{{loop_name}}"			   
+Example in playbook :
+---
+- name: Install Software
+  hosts: all
+  vars:
+	packages:
+		- name: nginx
+		  required: True
+		- name: mysql
+		  required: True
+		- name: apache
+		  required: False	
+  tasks:
+	- name: Install "{{item.name}}" on Debian
+	  apt:
+	     name: "{{item.name}}"
+	     state: present
+	  when: 
+		  item.required == True
+	  loop: "{{packages}}"	  
+	  
+	  
+***- Conditional & Register	  
+	- name: Check service status
+	  hosts: all
+	  tasks:
+		- command: service http status
+		  register: result
+		- mail:
+           to: admin@company.com/
+		   subject: service alert
+		   body: httpd service is down
+		   when: result.stdout.find('down') != -1
+
+=================== Ansible Loops ==================		  
+- 
+  name: Create User
+  hosts: all
+  tasks:
+   - user: 
+		name: '{{ item }}'
+		state: present
+	loop:
+		- rajesh
+		- snehal
+		- Sanu
+		- etc
+		- abc
+	
+
+***-    with_*	
+with_items
+with_password
+with_url
+with_etcd
+with_varnames
+with_file
+
+Example :
+-
+    name: 'Print list of fruits'
+    hosts: localhost
+    vars:
+        fruits:
+            - Apple
+            - Banana
+            - Grapes
+            - Orange
+    tasks:
+        -
+            command: 'echo "{{ item }}"'
+            with_items: '{{ fruits }}'
+			
+=================== Ansible Strategy ==================			
+By default execute using "linear" strategy. This strategy will run parallel on all server together.
+"free" strategy : It will run task indepdenant without wait for other servers.		[ strategy: free ]
+"batch" strategy : It will run task in batchwise like 3 server together and then other 3 server together etc etc 	[ serial: 3 ] or [ serial: 20% ]
+By default, Ansible will create 5 fork at a time. We can increase value from ansible.cfg. If we want to run task on 100s of server 
+then ansible will trigger task only 5 servers at a time then next. 
+			
+=================== Ansible Roles ==================
+Syntax :
+ roles:
+	- <role_name>
+Default Directory Structure :
+defaults, handlers,  meta, tasks, tests, vars, templates
+
+CMD:
+ansible-galaxy init <name>              => It will create directory structure for us
+ansible-galaxy install <role_name>
+ansible-galaxy list
+ansible-config dump | grep ROLE
+ansible-galaxy search <role_name>
+ansible-galaxy install <role_name> -p <directory_path>
+
+Write a task under "tasks/main.yaml" file
+=================== Ansible Error Handling ==================
+if a task fail on one of the server then remaining task will continue on other server and will abort task on failure task server.
+If we want to stop task on all server if a task fail on any one of the server then use below module
+" any_error_fatal: true "
+If we did not care about task failure and want to continue next task then use belong module
+" ignore_errors: yes "		=> ignore errors
+If we want to check task is fail or not then use belong modue
+" failed_when:  "
+
+=================== Ansible Jinja2 Templating ==================
+The name is {{ my_name }}	=> The name is Bond
+The name is {{ my_name | upper }}	=> The name is BOND
+The name is {{ my_name | lower }}	=> The name is bond
+The name is {{ my_name | title }}	=> The name is Bond
+The name is {{ my_name | replace ("Bond", "Bourne") }}	=> The name is Bourne
+The name is {{ first_name | default(James) }} {{ my_name }}	=> The name is James Bond
+
+*** Filter - List & Set
+{{ [ 1, 2, 3 ] | min }}				=> 1
+{{ [ 1, 2, 3 ] | max }}				=> 3
+{{ [ 1, 2, 3, 2 ] | unique }}		=> 1, 2, 3
+{{ [ 1, 2, 3, 4 ] | union [ 4, 5 ] }}		=> 1, 2, 3, 4, 5
+{{ [ 1, 2, 3, 4 ] | interesect [ 4, 5 ]}}	=> 4
+{{ [ "My", "name", "is", "Rajesh" ] | join ("  ")}}		=> My name is Rajesh
+
+=================== Ansible vault ==================
+ansible-vault encrypt inventory.txt
+ansible-playbook playbook.yml -i inventory.txt --ask-vault-pass		=> enter vault passwd
+ansible-playbook playbook.yml -i inventory.txt -vault-password-file  ~./vault_pass.txt		=> Store password in plain text 
+ansible-playbook playbook.yml -i inventory.txt -vault-password-file  ~./vault_pass.txt		=> 
+ansible-vault view inventory.txt
+ansible-vault create inventory.txt
+
+*** 
+ansible-vault encrypt playbook_name		[ Encrypting a playbook ]
+ansible-vault edit playbook_name	[ Editing an encrypted playbook ]
+ansible-vault view playbook_name	[ Viewing an encrypted playbook ]
+ansible-playbook playbook_name --ask-vault-pass		[ Executing an encrypted playbook, by letting ansible prompt you for password ]
+ansible-vault create file_name	[ Create an encrypted file ]
+
+You can store the vault password in a file and then either pass the path in the execution command or store it in the Environment variable
+Providing path of password file while execution
+ansible-playbook playbook_name --vault-password-file your_path
+
+
+Store the password in a file, let's assume you did in /pass, now set environment variable for this path
+
+export ANSIBLE_VAULT_PASSWORD_FILE=/pass
+# Now if you will execute your playbook with password flag, it will work
+ansible-playbook playbook_name
+
+
+**************** Assignment ******************
+Install python, mysql, web server and launch sample applicaton on it
+  - using simple playbook
+  - using File seperation
+  - using Role
+  
+Master : 100.105.79.113
+Node1: 100.105.82.125
+Node2: 100.105.77.240

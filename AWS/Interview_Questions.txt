@@ -1,0 +1,17 @@
+## AWS Cloud ##
+S3 bucket life cycle policy
+Security in AWS infra
+How to manage logs 
+S3 bucket versioning 
+difference between spot instance, on-demand & Reserve instance
+Biforget hits in different region like 1 ec2 in mumbai and other in us-east. Both server got hit from route53   ***
+difference between NACL & SG	
+Recover EC2 key pair/ssh file to login and extend EBS vol
+static website hosted on s3 bucket and want to change default port to access outside
+how to login & install packages in private subnet's EC2 server   [ NAT gateway ] 
+how you have taken backup
+Design 3 tier architectur with HA
+how to work on cost cutting in aws
+Diff between Launch configuration and Launch Template
+How cloudfront work
+check api gateway

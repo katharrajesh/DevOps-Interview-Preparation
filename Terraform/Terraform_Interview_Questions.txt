@@ -1,0 +1,256 @@
+## Terraform interview Questions ##
+https://k21academy.com/terraform-iac/terraform-beginners-guide/
+
+
+What are the component of Terraform ?
+	Providers: The main function of a provider is to configure it with some parameter. In most cases, supplying credentials 
+			   is needed to reach API and submit requests. If required parameters are not provided, Terraform will look elsewhere.
+	Resources: Resources is a target for CRUD operations. The resource can be broken into type and and a user-defined name 
+			   that must be unique to only this resource type in the same module.		   
+	Data Sources: Data Sources are "read-only" resources that can pull information that already exist within in the 
+				  account or environment. The main use of data sources is to fetch parameters needed to create other resources.
+	State: Within in Terraform, the state file gives details about the resources that were created within the given project. 
+		   The primary focus is to provide existing information to communicate with Terraform in case of modifications. 
+		   These state file also contain sensitive information. In order to store and retrieve state file, Terraform uses the 
+		   concept of backend module to specify a bucket, key, and region to store the stat information.			  
+	Variables: 
+		Input: Using the variable block, input variables can be declared usually with the following information: type, 
+				default, description.
+		Local: Local variable work similar to input variables but the scope of use is limited to the module where 
+				they have been declared. The main use of local variables is to reduce code repetition.
+		Output: In some case, when a resource is created within the module, that output output will sometimes be needed 
+				as an input for another module. The output variable can address that case by defining a output block that
+				can store a subset of created resources.
+			   
+Terraform architecture mainly consists of the following components ?
+	Terraform Core: Terraform’s core (also known as Terraform CLI) is built on a statically-compiled binary that’s developed 
+					using the Go programming language. This binary is what generates the command line tool (CLI) known as 
+					“terraform,” which serves as the primary interface for Terraform users.
+	Providers: Terraform providers are modules that enable Terraform to communicate with a diverse range of services and 
+			   resources, including but not limited to cloud providers, databases, and DNS services. Each provider is 
+			   responsible for defining the resources that Terraform can manage within a particular service and translating 
+			   Terraform configurations into API calls that are specific to that service.
+	State file: The Terraform state file is an essential aspect of Terraform’s functionality. It is a JSON file that stores 
+				information about the resources that Terraform manages, as well as their current state and dependencies. 
+				Terraform utilizes the state file to determine the changes that need to be made to the infrastructure when a 
+				new configuration is applied. It also ensures that resources are not unnecessarily recreated across multiple 
+				runs of Terraform. 
+
+Terraform Provisioners
+=>	file, local-exec, remote-exec
+	Terraform provisioners are a feature that allows Terraform to execute scripts or commands on newly created resources or 
+	instances. These scripts can be used for various purposes, such as setting up and configuring the infrastructure, installing 
+	software, running tests, and performing any other necessary actions. 	
+	Provisioners are executed after a resource has been created and can also be triggered when a resource is destroyed. 
+	Terraform comes with several built-in provisioners, including the file provisioner for copying files to a resource and the 
+	remote-exec provisioner for running commands on a remote machine. It is also possible to create custom provisioners for more 
+	advanced use cases. This is mainly used as a last resort unless you are unable to achieve your desired outcome with 
+	existing resource blocks in Terraform.
+
+What is meta argument ?
+	Meta-arguments in Terraform are special arguments that can be used with resource blocks and modules to control their behavior 
+	or influence the infrastructure provisioning process. They provide additional configuration options beyond the regular 
+	resource-specific arguments.
+	Example, count, for_each, provider [ Whaterver we are providing to module ]
+
+What is data source in Terraform ?
+	Terraform data sources let you dynamically fetch data from APIs or other Terraform state backends. It allow Terraform to use 
+	information defined outside of Terraform, defined by another separate Terraform configuration, or modified by functions.
+	Example, Data sources allow data to be fetched or hit using API URL or endpoint for use elsewhere in Terraform configuration.
+	
+Have you Heard about null resource ?
+	The null_resource helps us to execute any command remotely or locally to provisioning any resource or even to create 
+	a configuration file or perform some command or scripts to change some configuration. There is no limit to what you can do, 
+	which is powerful.
+
+What is the purpose of to use sentinel policy ?
+	Terraform Enterprise uses Sentinel to enforce policy on Terraform configurations, states, and plans. The Sentinel 
+	integration with Terraform runs within Terraform Enterprise after a terraform plan and before a terraform apply .
+
+Lets say you have launch 3 EC2 and created 4th one manually. Can we get 4th instance data in terraform ?
+	Yes, We need to write resource block with mandatory parameter in terraform file and execute "terraform import aws_instance.<resource_name> <Instance ID>"
+	
+What is private module registry	?
+	Terraform Cloud's private registry works similarly to the public Terraform Registry and helps you share Terraform providers 
+	and Terraform modules across your organization. It includes support for versioning and a searchable list of available 
+	providers and modules.	
+
+How to secure password in terraform file and restrict to print in plan cmd ?
+	=> sensitive   = true    [ mention in output block ]
+	=> terraform vault
+	=> Use environment variable
+	=> terraform plan | terrahelp mask
+	=> store terraform.tfstate file at secure remote location
+	=> terrahelp encrypt -simple-key=sdljksdflj -file=<file_patch>.txt
+	
+What is count & for_each ? and Difference and tell me scenirio 
+	count: The count parameter in Terraform allows you to create multiple instances of a resource. This is particularly useful 
+	       when you need to create a set of similar resources, like multiple instances of a server or a set of similar databases.
+	for_each: https://developer.hashicorp.com/terraform/language/meta-arguments/for_each
+	Like the count argument, the for_each meta-argument creates multiple instances of a module or resource block. However, 
+	instead of specifying the number of resources, the for_each meta-argument accepts a map or a set of strings. 
+	This is useful when multiple resources are required that have different values.
+	https://spacelift.io/blog/terraform-count-for-each
+
+What is local value ?
+	https://spacelift.io/blog/terraform-locals
+
+What are the modules in terraform ?
+	Root Module: consists of the resources defined in the . tf files in the main working directory. 
+	Child Module: A module that has been called by another module is often referred to as a child module.
+	Published Modules: Anyone can publish and share modules on the Terraform Registry. Published modules support versioning. 
+	
+Can we access modules from another repo or location ?
+	module "idc-provider" {
+    source = "git@github.com:identity/terraform-aws-github-oidc-provider"
+	}
+	https://developer.hashicorp.com/terraform/language/modules/sources#github
+
+I have 2 config. First is use to launch vpc and other network stuff and 2nd one is creating resource like ec2. Then How to 
+refer this detail in my EC2 to launch specific VPC ?
+
+Terraform_remote_state ?
+	Terraform writes the state data to a remote data store, which can then be shared between all members of a team.
+
+Where to store terraform tfstate file ?
+	=> This state is stored by default in a local file named "terraform. tfstate", but we recommend storing it in Terraform 
+	Cloud to version, encrypt, and securely share it with your team.
+
+If we lose terraform.tfstate file then how to recover it 
+	=> 1)Check for Backups: Terraform often creates backup state files with a .backup extension, like terraform.tfstate.backup.
+	   2)Check Version Control System (VCS) History
+	   3)Check Remote State Storage like S3 bucket versioning
+	   4) Recreate all configuration manually again and execute import cmd
+	
+Life Cycle in Terraform ?
+	Create: creates the object with the defined settings.
+	Destroy: destroys the object when the configuration no longer exists.
+	Update-in-place: updates the object accordingly when the settings in the resource block are changed. 
+					  For example, adding a disk to a VM in Azure can be created and added without destroying the VM first.
+	Destroy and recreate: destroys the object before re-creating it, if certain setting changes within the resource configuration 
+						  block means, this must happen on the given platform. For example, changing the name of a VM in Azure 
+						  is not possible without first destroying the VM. It is destroyed and then recreated with the new VM name 
+						  specified in the settings of the resource block.
+
+How to Delete specific resource using terraform command ?
+	=> terraform destroy -target='resource.name'
+	
+How to manage multiple environment using terraform ?
+	=> Terraform workspace. It will allow to manage multiple tfstate file.
+	
+How do you handle secretes in Terraform ?
+	1: Use a secure remote backend
+	2: Use environment variables
+	3: Secure the Terraform host
+	4: Encrypt files with KMS, PGP, or SOPS
+	5: Use secret stores like Key Vault and AWS Secrets Manager
+	6: Mask sensitive values
+	https://spacelift.io/blog/terraform-secrets
+
+What is resource graph in terraform ?
+	=> # terraform graph | dot -Tsvg > graph.svg
+		https://developer.hashicorp.com/terraform/cli/commands/graph
+	
+What is a tainted resource in Terraform ?
+	=> The terraform taint command informs Terraform that a particular object has become degraded or damaged. Terraform represents 
+	   this by marking the object as "tainted" in the Terraform state, and Terraform will propose to replace it in the next plan 
+	   you create.
+		This command is deprecated. we recommend use the -replace option with terraform apply
+		#terraform apply -replace="aws_instance.example[0]"
+
+What is terraform state rollback ?
+	=> The usual way to represent "rolling back" in Terraform is to put your configuration in version control and commit before 
+	   each change, and then you can use your version control system's features to revert to an older configuration if needed. 
+	   Not all changes can be rolled back purely by reverting a VCS change though.
+
+RBAC => Role base acces control ?
+	=> It allows you to restrict access to Observe based on the assigned role in your organization. You can add users to 
+       groups with specific permissions that allow or deny actions within the Observe instance.  
+	   https://docs.observeinc.com/en/latest/content/workspaces/rbac-terra.html#:~:text=Role%2DBased%20Access%20Control%20(RBAC,actions%20within%20the%20Observe%20instance.
+
+What is terrascan ?
+	=> Terrascan is a static code analyzer for Infrastructure as Code (IaC). You can install and run Terrascan in several 
+	   different ways. Companies most commonly use Terrascan in automated pipelines to identify policy violations before they 
+	   provision insecure infrastructure.
+	   to scan your Infrastructure as Code for security and compliance policy violations. It supports various IaC languages 
+	   such as Terraform, Kubernetes, Dockerfile, and more.
+	   
+Difference between cloud formation and terraform ?
+	=> CloudFormation is developed by AWS and only manages AWS resources. 
+	   Terraform is developed by HashiCorp and can manage resources across a wide range of cloud vendors.
+	   https://www.clickittech.com/devops/terraform-vs-cloudformation/
+	   
+Launch resource from GitHub code ?
+	=> https://devopsquare.com/create-various-resources-on-aws-using-terraform-github-actions-42c7763b025c	   
+
+How to prevent terraform to modify specific resource 
+	=> To block Terraform from deleting an imported resource, you can use the lifecycle block with the prevent_destroy argument
+	   set to true. This argument, when set to true , will prevent Terraform from deleting the resource during a terraform 
+	   destroy operation.
+
+What is the diff between Terragrunt & terraform ?
+	=> Terraform is primarily focused on defining and provisioning infrastructure, 
+	    while Terragrunt focuses on providing additional features for managing Terraform configurations and state.
+	   Terraform and Terragrunt use HCL for configuration, but Terragrunt introduces additional features and syntax 
+	    for its specific functionalities.
+	   Terraform manages its own state files, while Terragrunt provides additional features for remote state management.
+	   Terragrunt emphasizes DRY principles, making it easier to reuse and share configurations across different projects.
+	   In summary, while Terraform is the core IaC tool for defining and provisioning infrastructure, Terragrunt is a 
+	    complementary tool that adds extra functionality for managing Terraform configurations and state in a more modular 
+		and reusable way.
+		
+How to manage terraform drift ?
+	=> Terraform drift refers to the situation where the actual state of your infrastructure deviates from the desired state 
+		specified in your Terraform configuration. This can happen due to changes made directly to the infrastructure outside 
+		of Terraform or due to unforeseen issues. 
+		
+How to release terraform lock like if we face timeout on tfstate
+	=> If a lock is not released properly, it can lead to timeout issues. 
+	   Increase Timeout Settings:
+		# export TF_TIMEOUT=30m
+				OR
+		# terraform apply -timeout=30m		
+
+What will terraform init command do ?
+	init Command initializes a working directory containing Terraform configuration files. It will find, download, and install the 
+	necessary provider plugins. This command performs the following steps In order to prepare the working directory for use with Terraform:
+		Backend Initialization
+		Child Module Installation
+		Plugin Installation
+
+Which file will download by terraform init command ?
+	it will automatically download and install any required Terraform providers and plugins used within the Terraform code. 
+	It will also set up the backend configured in the Terraform code for storing the Terraform state ( . tfstate ) file.
+
+Difference between terraform fmt [ format ] & terraform validate ?
+	fmt : used to rewrite Terraform configuration files to a canonical format and style. 
+	validate: validates the configuration files in a directory, referring only to the 
+			  configuration and not accessing any remote services such as remote state, provider APIs, etc.
+			  
+Terraform command for format check for all the modules? 
+	Answer: Terraform fmt -check -recursive 
+	
+What is the use of terraform refresh command ?
+	reads the current settings from all managed remote objects and updates the Terraform state to match. Before any 
+	operation, Terraform does a refresh to update the state with the real infrastructure. When creating a terraform plan 
+	or running terraform apply, a refresh of the state of existing objects is automatically performed by Terraform (which is the default behavior).
+	
+What is the use of terraform import command and syntax ?
+	to import existing infrastructure to Terraform state.
+	
+What will happened if you execute terraform apply -replace command ?
+	If you know that an object is damaged, or if you want to force Terraform to replace it for any other reason, you can override 
+	Terraform's default behavior using the -replace=... planning option when you run either terraform plan or terraform apply 
+	$ terraform apply -replace="aws_instance.<resource_name>"
+	
+What is Terraform backend ?
+	A backend defines where Terraform stores its state data files. Terraform uses persisted state data to keep track of the 
+	resources it manages. Example S3 bucket	
+	
+What is resource graph ?
+	Terraform builds a dependency graph from the Terraform configurations, and walks this graph to generate plans, refresh state, and more.
+
+What is State File Locking? 
+    State file locking is a Terraform mechanism that prevents operations on a specific state file from being performed 
+	by multiple users at the same time. Once the lock from one user is released, any other user who has taken a lock on that 
+	state file can operate on it.	

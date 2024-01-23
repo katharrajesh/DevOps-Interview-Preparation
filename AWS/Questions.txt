@@ -1,0 +1,507 @@
+itw-01: T-Systems ICT India Pvt. Ltd
+
+Q.1: brief yourself
+
+Q.1.1: hav u work on Kubernates?
+
+no sir. I did not get chance to work. only senior members handling that.
+
+Q.2: How do u execute jenkin pipeline?
+
+I have explained DWN-01\Q.085\project-01. I told we start build at 10PM. then he asks, if developer want immediate result, then?
+
+I answer, we have to use webhook.
+
+what other types of execution?
+
+poll scm, build periodically, webhook, upstream, downstream.
+
+what is difference between them?
+
+Q.3: what do you used to build code?
+
+maven
+
+Q.4: what command in maven?
+
+mvn clean install
+
+Q.5 what it does?
+
+maven has lifecycle, verify, compile, test, package, integration test, build, deploy
+
+with mvn clean install, it executes all this thing.
+
+Q.6: If I want to do only integration test, then how I can do?
+
+not able to answer.
+
+Q.7: what deploy do?
+
+not able to answer.
+
+Q.8: As you told, you have use docker container, what are commands you have used docker file?
+
+FROM, COPY
+
+Q.9: what other commands?
+
+WORKDIR, RUN, ADD
+
+can u write command to enter in container in chat box?
+
+docker ps for getting container id
+
+docker attach container id
+
+docker exec -it container id bash
+
+Q.10: What command to make text file using docker commands?
+
+not able to answer.
+
+Q.10: I made container, I written txt file. How can I copy that that container & see that text file?
+
+no answer.
+
+This means, duplicate of container.
+
+> docker container ls
+                                                                                                                         
+CONTAINER ID  IMAGE   COMMAND  CREATED         STATUS         PORTS  NAMES
+c5a24953e383  gradle  "bash"   22 minutes ago  Up 22 minutes  #      naughty_torvalds
+ 
+
+In above images, I have container ID “c5a24953e383”. I have to duplicate this container.
+
+we can create a new image from that container using the docker commit command:
+
+docker commit c5a24953e383 newimagename
+
+And then start a new container from that image:
+
+docker run -d newimagename
+
+ 
+
+docker commit practical is in aws_practical\Q.40.02
+
+Q.11: what docker compose do?
+
+run multiple container & treat everything as service.
+
+Q.12: If I have 2 container made using docker compose, how can I run one container after another using docker compose?
+
+12.1:
+
+Start a single service:
+
+ 
+
+$ docker-compose up <service_name>
+
+Stop a single service:
+
+$ docker-compose stop <service_name>
+
+Restart a single service:
+
+$ docker-compose restart <service_name>
+
+Build a single service:
+
+$ docker-compose build <service_name>
+
+ 
+
+For example, the following example will determine whether mysql has been started, if it is started, execute catalina.sh run
+
+>wait-for-it.sh host_name : 3306 -- catalina.sh run
+
+ 
+
+The following introduces the use of command instruction + wait-for-it script to do startup dependency
+
+https://github.com/zeson99/docker_demos/tree/master/depend_on_demo
+
+ 
+
+ 
+
+ 
+
+https://www.linkedin.com/pulse/start-one-container-after-another-using-andrey-jim%C3%A9nez/
+
+Q.13: u have written route 53? what do you know about it?
+
+route 53 do DNS management. we are hiding actual details using CNAME. if we buy swapnilbhole.com & my EC2 IP is 1.2.3.4, then 1.2.3.4 is link to swapnilbhole.com. Now, if I have support.swapnilbhole.com or help.swapnilbhole.com. In this way, we are hiding actual data with CNAME.
+
+Q.14: what are routing policy.
+
+geolocation.
+
+do u know others?
+
+no answer.
+
+Q.15: u written load balancer, what do u know about it.
+
+wrongly I started autoscaling type. horizontal & vertical. He stop me & tell that is not correct.
+
+Q.16: what do u know about shell script, python?
+
+I got task to work on s3 bucket using boto3 library for 2 scrum.
+
+He has to ask, but, I have not explained more. hence, he did not told to write command.
+
+prepare well for this.
+
+Q.17: how is your scrum methodology?
+
+we have 21 days of 1 scrum. 21 days means actual 15 working days. In sprint planning, all team member task are getting assign. Then we have daily scrum meeting at 10AM. In this, we have to explain, what we did yesterday & what we are going to do today. We have to update jira ticket & timesheet as per assign task.  We have client meeting on Wednesday. In client meeting, we don’t have permission to talk, but, it is mandatory to join meeting to understand overall project status.
+
+we have retrospective meeting after scrum ending. In this, we discuss, what goes right, what goes wrong, what are improvement needs to do.
+
+Q.18: do u have any question for me?
+
+sir, if I got opportunity to work. what services & tools, I need to work.
+
+he explains, aws services grafana, lambda, python for automation, Kubernates & cutting edge tools.
+
+Q.19: any other questions?
+
+sir, that docker files how to run automatically.
+
+he told, u can google search.
+
+any other question?
+
+no sir.
+
+ 
+
+itw-02: T-Systems ICT India Pvt. Ltd (L-2 round with Tushar Hiwse)
+
+Q.1: brief yourself
+
+Q.1.1: How is your day? are you working on ticket or jira
+
+explained same as in Q.1.1\Q.17:
+
+Q.2: Can you explain any pipeline execution?
+
+I have explained DWN-01\Q.085\project-01.
+
+Q.3: How do you deploy application?
+
+we are accessing URL from container.
+
+where you are storing container?
+
+in EC2 instance.
+
+Q.3.1: but, how your total deployment happens?
+
+no answer. aws_practical\Q.45.5
+
+How deployment happen in production?
+
+using Kubernates. but, don’t have access for it.
+
+Q.4: Let’s say I have domain name xyz.com & store in container in ECR, then how can I access domain name. command for accessing domain name.
+
+I have explained, I know domain name mapping with IP address using route 53. but, using container not able to get it.
+
+Q.5: do u know requirement.txt in python?
+
+No answer. I have work on boto3.
+
+Q.6: You have mention ansible. can you walkthrough?
+
+we have made group let’s say qalinux & in host file we have added private IP address. In playbook we have written host, user, connection, name, action. In host, if we put qalinux[0] then, package will be install in node-0.
+
+Q.7: Do you know difference between CMD & ENTRYPOINT.
+
+explained as in aws_practical.
+
+Q.8: any cloud system, how can I access using terraform?
+
+no answer. Seniors have written script. we used only to make infrastructure.
+
+Q.9: what AWS services do you used?
+
+load balancer, Cloudwatch, cloudtrail, SNS,S3,route53.
+
+Q.10: Have u use grafana?
+
+no sir. (They have mentioned in JD)
+
+Q.11: Do you have any question for me?
+
+In last interview, they told we are using cutting edge tools. What are tools you are using.
+
+ 
+
+ 
+
+itw-03: tsys.com
+
+introduce urself.
+
+Q.1: how is ur jenkin pipeline?
+
+explained project_01.
+
+Q.2: have you work on docker? Any docker file u have written?
+
+yes.
+
+what CMD does?
+
+explained as in aws_practical.
+
+what is RUN in Dockerfile?
+
+it run commands.
+
+That we can do using CMD also. what is difference between RUN & CMD.
+
+no answer.
+
+Q. If I have to run 2 images in Dockerfile how I can?
+
+it can be done through docker compose
+
+Q. but, if I want to do it from Dockerfile then how can I?
+
+Q. docker hub private repo are you using or docker registry?
+
+Q. How are you jenkin pipeline?
+
+project-1 explains.
+
+Q. what task u get assign yesterday on jenkin?
+
+project is under maintenance, so we are doing monitoring & troubleshooting of application.
+
+Q. Multibranch pipeline.
+
+upstream & downstream explain.
+
+Q. what are roles in ansible?
+
+Q. handler in ansible, what is use
+
+Q. what AWS services u have use?
+
+what is network load balancer?
+
+If I have flipcart.com, & I have to show to regional advertise, in regional language, how can I do? any ideas?
+
+Q. How I can jump to private VPC from outside word?
+
+Q. r u on Accenture & Virtusa payroll?
+
+ 
+
+itw-04: sterlite:  rahul.naik@stl.tech = 20 years cloud experience.
+
+HR= check naukri= Priyanka Chugh= save number as hr.sterlite
+
+time= exact one hour
+
+linux administration
+
+how can I create node from jenkin (not slave node).
+
+what is queue?
+
+IP table in linux?
+
+ansible file location to store IP?
+
+ssh path?
+
+security protocol? HTTP, HTTPS protocol & port number.
+
+do u understand pom.xml ?
+
+what is security group? If I say enable port number, then he ask what other option.
+
+regular expression in python?  I have to detect uppercase letter in python. How can I?
+
+How to debug/troubleshoot docker container? docker inspect. docker logs
+
+How to deployment in QA & UAT?  = sanity & smoke need to complete. then to UAT.
+
+unit test in CI? in mvn clean install, it does unit test.
+
+how do u deploy web app on normal instance? we install tomcat. then .war file we put in usr/local/tomcat/webapp. & accessing it using IP:port number.
+
+if we want URL then in route53 we can route domain name to IP address.
+
+jenkin administration? User permission= matrix based
+
+how many types to build? write declarative pipeline. manually building.
+
+How to install plugin in jenkin?
+
+docker compose? I have explained 45_YAML.txt\ YAML-6:  from this he asks,
+
+ docker volume? use? command.
+
+ansible role=? aws_practical\52.5
+
+how do u communicate master & node in ansible?
+
+ssh-keygen & put public key in node. location of public file in node?
+
+difference in load balancer type?
+
+horizontal & vertical scaling difference?
+
+what do u know about VPC?
+
+what is NACL= firewall for subnet.
+
+database you use? MySQL.
+
+database client?
+
+what automation you have done? => EBS snapshot & s3 logs using boto3.
+
+but this is small things? Any other automation.
+
+ how sonarQube you have integrated? does it is for every time use or only for master code?
+
+it is used for testing of feature. Not for task.
+
+IAM explain? => explained as in my notes.
+
+how do you raise ticket in jira?
+
+We mention problem in title. upload screenshot. tag developer name.
+
+how scrum work? => itw_01\ Q.17:
+
+is ticket getting daily discuss? No sir. only critical issues discuss in morning meeting. other bugs we are updating in 1 min.
+
+who is taking follow-up or how is procedure? => scrum master is creating ticket at start of scrum. for any raise ticket, scrum master taking follow up till issue get resolved.
+
+how is approval for dev branch?
+
+once completed task, supervisor approve. for dev team lead review code & approve. for master 2 views & then it merges to master.
+
+ 
+
+itw-05: bajajfinserv:
+
+SG & NACL difference?
+
+AMI & EBS difference?
+
+How can I give access to particular S3 object? Not a bucket?
+
+how will u attach CloudFront (practical need to explain)
+
+git rebase, revert, cherrypick command
+
+Requirement is for python code writing so, he ask deep in python
+
+If I hit URL & as soon as I hit URL, it should show picture from bucket> how can we do that?
+
+behavior in python?
+
+access privilege in python? (public, private)
+
+ scope resolution in python?
+
+any question for me?
+
+what tools & automation you do?
+
+we are using flask. we use aws. You need to brush up.
+
+ 
+
+itw-06: SAS:
+
+I have 3 tier architecture. frontend in react, database. How will you architect it.?
+
+why you use load balancer? what is difference between application & network load balancer?
+
+How is your CI & CD flow?
+
+explain as in project-03.
+
+Have u work on plugin?
+
+yes, sir. ssh client plugin. In this, I have DEV-1 server & we did ssh-keygen & public key is copied in credentials & given ID to that.
+
+ 
+
+Have u explore Kubernates on your own?
+
+No sir. learning right now.
+
+have you explored any other platform that jenkin?
+
+no sir. It was architect decision to use. code pipeline by AWS also there.
+
+ok. but do you learn other platform? no sir.
+
+is it good practice to do unit test & code analysis in pipeline? or we need to do separately.
+
+If I have 10 server & 5 commands. Then it will execute 1st command in all 5 then on 2nd. If I have to execute all command on 1st, how can I?
+
+what module u use in ansible? (yum-pkg)
+
+If I have to execute single command on single node? how can I? (using ad-hoc command)
+
+how will u show memory taken by docker container?
+
+have u work on linux?
+
+not much sir.
+
+what commands u use on daily basis?
+
+can’t answer this.
+
+do u know how to check memory in linux?
+
+what wget does?
+
+I am good in ansible. like that, what task u can perform or in what you are good in?
+
+jenkin, docker.
+
+we are using azure? so, how fast u can learn that.
+
+1 week.
+
+any question for me?
+
+what tools & automation u do sir?
+
+we are using shell script. but, eliminating with python. we use azure (this is mention in JD 1st then AWS).
+
+OK swapnil. HR will get back to you with feedback.
+
+ 
+
+itw-07: Quality kishok
+
+In mail, it is mentioned Ansible & requirement was for ansible.
+
+how do u connect nodes in ansible? (using ssh)
+
+what is ansible vault?
+
+what modules you have work ? I have told only yum package & apt-get & he stop interview.
+
+how u can copy file from master to slave in ansible(because in enterprise, we want to send files)
+
+how can I see docker container (docker ps)
+
+docker run command?  

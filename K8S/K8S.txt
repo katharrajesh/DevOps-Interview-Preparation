@@ -1,0 +1,225 @@
+https://kubernetes.io/docs/tutorials/kubernetes-basics/
+https://kubernetes.io/docs/tasks/
+
+Kubernetes - Cluster Architecture
+== Master Machine Components
+	etcd :
+		It stores the configuration information which can be used by each of the nodes in the cluster. It is a high availability
+		key value store that can be distributed among multiple nodes. It is accessible only by Kubernetes API server as it may 
+		have some sensitive information. It is a distributed key value Store which is accessible to all.
+		It is distributed reliable key-value store that is simple, secure and fast.
+		Port Default :- 2379
+		commands :-
+			backup : backup an etcd directory
+			cluster-health : check the health of the etcd cluster
+			mk : make a new key with a given value
+			mkdir : make a new directory
+			rm : remove a key or directory
+			rmdir : remove the key if it is an empty directory or a key-value pair
+			get : retrive the volue of a key
+		It will store data of Node, PODs, Configs, Secrets, Accounts, Roles, Bindings and others	
+		
+	Kube-API Server :
+		Kubernetes is an API server which provides all the operation on cluster using the API. API server implements an interface, 
+		which means different tools and libraries can readily communicate with it. Kubeconfig is a package along with the server 
+		side tools that can be used for communication. It exposes Kubernetes API.
+		1) Authenticate User
+		2) Validate Request
+		3) Retrieve data
+		4) Update ETCD
+		5) Scheduler
+		6) Kubelet
+	
+	Kube-Controller Manager :
+		This component is responsible for most of the collectors that regulates the state of cluster and performs a task. In general, it can be considered as a daemon which runs in 
+		nonterminating loop and is responsible for collecting and sending information to API server. It works toward getting the shared state of cluster and then make changes to 
+		bring the current status of the server to the desired state. The key controllers are replication controller, endpoint controller, namespace controller, and service account 
+		controller. The controller manager runs different kind of controllers to handle nodes, endpoints, etc.
+		Node Controller
+		Replication-Controller
+		[ Watch Status, Remediate Situation, Node Monitor Perid=5s, Node Monitor Grace period=40s, POD Eviction Timeout=5m ]	
+		
+	Kube-Scheduler :
+		This is one of the key components of Kubernetes master. It is a service in master responsible for distributing the workload. It is responsible for tracking utilization of 
+		working load on cluster nodes and then placing the workload on which resources are available and accept the workload. In other words, this is the mechanism responsible for 
+		allocating pods to available nodes. The scheduler is responsible for workload utilization and allocating pod to new node.
+
+== Kubernetes - Node Components
+	Docker :
+		The first requirement of each node is Docker which helps in running the encapsulated application containers in a relatively isolated but lightweight operating environment.
+		
+	Kubelet Service :
+		This is a small service in each node responsible for relaying information to and from control plane service. It interacts with etcd store to read configuration details and wright 
+		values. This communicates with the master component to receive commands and work. The kubelet process then assumes responsibility for maintaining the state of work and the node 
+		server. It manages network rules, port forwarding, etc.
+		Register node
+		Create Pods
+		Monitor Node & Pods
+		
+	Kubernetes Proxy Service :
+		This is a proxy service which runs on each node and helps in making services available to the external host. It helps in forwarding the request to correct containers and is 
+		capable of performing primitive load balancing. It makes sure that the networking environment is predictable and accessible and at the same time it is isolated as well. 
+		It manages pods on node, volumes, secrets, creating new containers’ health checkup, etc.
+
+
+
+Kubernetes Basics
+	Cluster :
+		It is a collection of hosts(servers) that helps you to aggregate their available resources. That includes CPU, RAM, disk, and their devices into a usable pool.
+
+	Master :
+		The master is a collection of components which make up the control panel of Kubernetes. These components are used for all cluster decisions. It includes both 
+		scheduling and responding to cluster events.
+	
+	Node :
+		It is a single host which is capable of running on a physical or virtual machine. A node should run both kube-proxy, minikube, and kubelet which are considered 
+		as a part of the cluster.
+	
+	Namespace :
+		It is a logical cluster or environment. It is a widely used method which is used for scoping access or dividing a cluster.
+
+	Master Node :
+		The master node is the first and most vital component which is responsible for the management of Kubernetes cluster. It is the entry point for all kind of administrative tasks. 
+		There might be more than one master node in the cluster to check for fault tolerance.
+		The master node has various components like API Server, Controller Manager, Scheduler, and ETCD. Let see all of them.
+		API Server: The API server acts as an entry point for all the REST commands used for controlling the cluster.
+	
+	Scheduler :
+		The scheduler schedules the tasks to the slave node. It stores the resource usage information for every slave node. It is responsible for distributing the workload.
+		It also helps you to track how the working load is used on cluster nodes. It helps you to place the workload on resources which are available and accept the workload.
+	
+	Etcd :
+		etcd components store configuration detail and wright values. It communicates with the most component to receive commands and work. It also manages network rules and port 
+		forwarding activity.
+		
+	Worker/Slave nodes :
+		Worker nodes are another essential component which contains all the required services to manage the networking between the containers, communicate with the master node, 
+		which allows you to assign resources to the scheduled containers.
+		Kubelet: gets the configuration of a Pod from the API server and ensures that the described containers are up and running.
+		Docker Container: Docker container runs on each of the worker nodes, which runs the configured pods
+		Kube-proxy: Kube-proxy acts as a load balancer and network proxy to perform service on a single worker node
+		Pods: A pod is a combination of single or multiple containers that logically run together on nodes
+		
+Other Key Terminologies
+	Replication Controllers :
+		A replication controller is an object which defines a pod template. It also controls parameters to scale identical replicas of Pod horizontally by increasing or 
+		decreasing the number of running copies.
+	
+	Replication sets :
+		Replication sets are an interaction on the replication controller design with flexibility in how the controller recognizes the pods it is meant to manage. It replaces 
+		replication controllers because of their higher replicate selection capability.
+	
+	Deployments :
+		Deployment is a common workload which can be directly created and manage. Deployment use replication set as a building block which adds the feature of life cycle management.
+		
+	Stateful Sets :
+		It is a specialized pod control which offers ordering and uniqueness. It is mainly used to have fine-grained control, which you have a particular need regarding deployment 
+		order, stable networking, and persistent data.
+
+	Daemon Sets :
+		Daemon sets are another specialized form of pod controller that runs a copy of a pod on every node in the cluster. This type of pod controller is an effective method for 
+		deploying pods that allows you to perform maintenance and offers services for the nodes themselves.
+		
+
+
+Namespaces
+	1) Default		: Adding an object to a cluster without providing a namespace will place it within the default namespace. The cluster comes out of the box with a Namespace 
+					  called “default.” In fact, there are actually three namespaces that Kubernetes ships with: default, kube-system (used for Kubernetes components), 
+					  and kube-public (used for public resources)
+	2) kube-system	: kube-system is the namespace for objects created by the Kubernetes system. Typically, this would contain pods like kube-dns, kube-proxy, kubernetes-dashboard 
+					  and stuff like fluentd, heapster, ingresses and so on. kube-system contains service accounts which are used to run the kubernetes controllers.
+	3) kube-public	: This namespace is created automatically and is readable by all users (including those not authenticated). This namespace is mostly reserved for cluster usage, 
+					  in case that some resources should be visible and readable publicly throughout the whole cluster.
+	4) kube-node-lease: This namespace holds Lease objects associated with each node. Node leases allow the kubelet to send heartbeats so that the control plane can detect node failure.				  
+	
+	Example	: 	db-service.dev.svc.cluster.local
+	                |       |   |        |
+			Service name	| Service    |
+							|			domain
+						Namespace		
+
+Services
+	1) NodePort : Exposes the Service on each Node's IP at a static port (the NodePort). A ClusterIP Service, to which the NodePort Service routes, is automatically created. 
+				  You'll be able to contact the NodePort Service, from outside the cluster, by requesting <NodeIP>:<NodePort>.
+				  Range : 30000 - 32767
+				  Algorithm : Random
+	2) ClusterIP : Exposes the Service on a cluster-internal IP. Choosing this value makes the Service only reachable from within the cluster. This is the default ServiceType.
+	3) LoadBalancer : Exposes the Service externally using a cloud provider's load balancer. NodePort and ClusterIP Services, to which the external load balancer routes, 
+					  are automatically created.
+	4) ExternalName : Maps the Service to the contents of the externalName field (e.g. foo.bar.example.com), by returning a CNAME record with its value. 
+					  No proxying of any kind is set up.					  
+
+Taint & Tolerations
+	Taint is set on node
+	Tolerations is set on pods
+	if there is at least one un-ignored taint with effect NoSchedule then Kubernetes will not schedule the pod onto that node
+	if there is no un-ignored taint with effect NoSchedule but there is at least one un-ignored taint with effect PreferNoSchedule then Kubernetes will try to not schedule the pod onto the node
+	if there is at least one un-ignored taint with effect NoExecute then the pod will be evicted from the node (if it is already running on the node), and will not be scheduled onto the node (if it is not yet running on the node).	
+
+Resource Requiment & Limits
+		By default, container has 0.5 CPU and 256 MB RAM
+		RAM should be specify in Gi or Mi or Ki. 	1 Gi = 1024 MB
+		if container will use more than specify resource limit then it will call as throttle
+		container can use more RAM as specify in limit but if container is using RAM more than node server then it will terminate. 
+		For the POD to pick up those defaults you must have first set those as default values for request and limit by creating a LimitRange in that namespace.
+		----------- limit-range-cpu.yaml ------------
+		apiVersion: v1
+		kind: LimitRange
+		metadata: 
+			name: cpu-resource-constraint
+		spec:
+			limits:
+			- default:
+				cpu: 500m
+			  defaultRequest:
+				cpu: 500m
+			  max:
+				cpu: "1"
+			  min:
+				cpu: 100m
+			  type: Container
+
+		----------- limit-range-memory.yaml ------------			  
+		apiVersion: v1
+		kind: LimitRange
+		metadata: 
+			name: memory-resource-constraint
+		spec:
+			limits:
+			- default:
+				memory: 1Gi
+			  defaultRequest:
+				memory: 1Gi
+			  max:
+				memory: 1Gi
+			  min:
+				memory: 500Mi
+			  type: Container
+
+		----------- resource-quota.yaml ------------			  
+		apiVersion: v1
+		kind: ResourceQuota
+		metadata:
+			name: my-resource-quota
+		spec:
+		  hard:
+			request.cpu: 4
+			request.memory: 4Gi
+			limits.cpu: 10
+			limits.memory: 10Gi
+			
+			
+	The status "OOMKilled" indicate that the pod ran out of memory.
+	
+DaemonSet
+	Every time a new node is added to a cluster, the pod is added to it, and when a node is removed from the cluster, the pod is removed.	
+	Use case : 1) To monitor all Nodes.  2) Kube-Proxy is also launch on all node as daemon set
+	
+Static Pods
+		Static Pods will be use if master server is not accessible/master's services down then we can launch Only Pod. /etc/kubernetes/manifests/
+		Static pods are a type of pod that is not observed or managed via Kube-apiserver and is directly bound to the Kubelet daemon on the node.
+		Static Pods are always bound to one Kubelet on a specific node
+
+K8S Monitoring
+	Available tools : 1) Metrics Server		2) Prometheus		3) Elastic Stack 		4) Datadog		5) dynatrace		
+ 

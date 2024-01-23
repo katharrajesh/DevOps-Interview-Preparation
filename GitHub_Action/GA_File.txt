@@ -1,0 +1,72 @@
+Create yaml files at  ".github/workflows/" 
+
+  === YAML File syntax ===
+name:                           => Its a entire workflow name 
+on: 							=> Its a event. We can trigger our workflow on the basis of event
+jobs: 							=> now our job configuration has started
+  runs-on: 						=> mention runners name
+  steps: 						=> We start to write commands and configuration from this step
+    - name: 					=> we can mention name of each step
+	  run: 						=> execute commands using run parameter
+	  
+	  
+
+===========  GitHub Action ============
+Create a repo
+ 
+ echo "# workflow-repo" >> README.md
+ git init
+ git add README.md
+ git commit -m "first commit"
+ git branch -M main
+ git remote add origin https://github.com/rajeshkathar-asurion/workflow-repo.git
+ git push -u origin main
+ 
+push an existing repository from the command line
+git remote add origin https://github.com/rajeshkathar-asurion/workflow-repo.git
+git branch -M main
+git push -u origin main
+
+TAS_SVC_USERNAME
+
+A ------
+name: Repository Dispatch in A Repository
+on: workflow_dispatch
+jobs:
+  trigger-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: print statement
+        run: echo "TWO"
+      - name: trigger another repo 
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{secrets.REPO_ACCESS_TOKEN}}
+          repository: katharrajesh/B-Repo
+          event-type: my-event
+          client-payload: '{"github": ${{toJson(github) }}}'
+		  
+		  
+B ------------
+name: Repository Dispatch
+on:
+  repository_dispatch:
+    types: [my-event]
+jobs:
+  myEvent:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: print trigger details    
+        run: echo ${{ github.event.client_payload.sha }}
+      - name: print name
+        run: echo "auto trigger"  		  
+		
+	  
+devopshomechannel@gmail.com
+imRajesh@123
+
+DevOps Home
+@DevOpsHome

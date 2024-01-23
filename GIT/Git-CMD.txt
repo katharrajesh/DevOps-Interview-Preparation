@@ -1,0 +1,193 @@
+#############################  GIT  Installation ###################################
+# apt update
+# apt install git
+# git --version
+
+############################ GIT Stages ###############################
+1) Working Directory
+2) Staging Area
+3) Repository (.git folder)
+4) Remote (github)
+
+#############################  GIT  ###################################
+
+basics : ---
+=======	Map GitHub account on system =======
+# git config --global user.name "katharrajesh"
+# git config --global user.email "imrajeshkathar@gmail.com"
+# git config --global --list
+# cat ~/.gitconfig		=> If you want to make further changes to your Git configuration, you can either use the git config command (recommended) or edit the ~/.gitconfig file by hand.
+# git config --global --edit
+# git config --global --unset user.name
+# git config --global --unset user.email
+# git config --global --remove-section user
+
+=======	Clone GitHub repository on system ======= 
+Create a GIT repository on github.
+# mkdir /Git_Repos   && cd /Git_Repos
+# git clone <https_URL>
+# ls		# cd <dir_name>			#ls
+# git status		[ By default, It will create main branch and it is called as a master branch ]
+
+=======	Basics Commands =======
+echo "First file created in repository" >start.txt
+# git status
+# git add <file_name>			[ Ex. git add start.txt ]	*OR* git add .  [ To add multiple file or dir ]		git rm --cache <file_name>		=> Undo chages which is added by "add"
+								# git restore --staged <file>   => to delete added file
+# git commit -m "Commenting start.txt file" 
+# git checkout -b main			OR    # git checkout -b master
+# git push origin main   OR  master		[ origin=refers to the GitHub copy of our repository,  master=refers to our default and only branch in the repository ]
+	Enter username & password
+# git commit -am "commit message"		=> It will add files and commit it. 	-a=> add file   -m=> message
+
+=======	Lets Start without git repository =======	
+mkdir project
+# git init fresh-project
+cd fresh-project && cd .git  && ls
+ * Please follow above steps to commit and status then delete directory.
+ 
+ 
+============= GIT Commands ===============
+# git mv <original_file_name>  <new_file_name>
+# git mv <file_name> <new_location>
+# git log 	=> To check to commit history 
+# git log --oneline --graph --decorate
+# git config --global alias.hist "log --all --graph --decorate --oneline"			=> It will alias command with git.hist command
+# git hist		=> It will show above command output.
+				=> Also, check in cat ~/.gitconfig
+
+=====##========== Without Password push file to remote =====##=========
+# git remote -v
+Generate Key Pair 
+
+# ssh-keygen
+
+It will prompt you three times, just keep options default by keep pressing Enter
+
+Let's copy the content of public, which will be there in
+# cat /root/.ssh/id_rsa.pub 
+
+Go to GitHub repo => Click on repository => Settings => Deploy keys => Add deploy key  => Paste .pub file => give it write permissions.
+
+Now get back to local repo, let's add another remote  reference to our local repo
+
+# git remote add origin2 <your_ssh_link_of_repo>
+
+Verify your remote links
+	git remote -v
+
+Then make changes in file, add it to staging area, local repo, followed by push to remote repo using origin2 this time
+
+
+============  GIT Ignore ================
+Specific File : MyFile.txt
+File Pattern : *.log
+Folder : FolderName/
+
+# vim .gitignore			=> Add this file in git working directory.
+							=> add file name or directory name or pattern files in .gitignore file.
+							=> add and commit .gitignore file. Whatever you are trying to ignore file to commit then it will ignore it.
+
+
+# git diff 			=> It will check difference between two stage
+# git difftool
+# git difftool HEAD
+# git difftool --staged HEAD
+# git diff -- README.md
+# git diff master  origin/master		OR
+# git difftool master  origin/master			=> It will compare files between local files and remote files [ github ]							
+
+
+
+================  Git Branching & Merging ===============
+# git branch -a 		=> List local and remote branch
+# git branch <mynewbranch>			=> To create new branch on local
+# git checkout <mynewbranch>		=> switch to "mynewbranch"
+# git branch -m <oldbranchname>  <newbranchname>			=> Rename branch name
+# git branch -d <branchname>			=> To delete branch
+# git checkout -b <newbranchname>		=> Create new branch and switch to newly created branch
+# git diff <branchname>  <branchname> 	=> It will check difference between 2 branch
+
+# git checkout master 					=> Switch to the master branch
+# git merge <develop_branchname>		=> merge changes from develop_branchname to master. You can merge branch without comment. It is call as Fast Foward merge
+# git merge add-copyright --no-ff 		=> --no-ff => No Fast Foward
+										=> You need to add comment using above flag
+# 	git merge <branchname> -m "message"									
+
+	*********  To resolve merge conflict issue ********
+    Execute below line to open mergetool 
+	# git config merge.tool vimdiff
+	# git config merge.conflictstyle diff3
+	# git config mergetool.prompt false	
+	
+	create conflict on one file and two branches				=>https://www.rosipov.com/blog/use-vimdiff-as-git-mergetool/
+
+# git mergetool <masterbranch> 	<branchname>
+
+====================  Rebase  ===================
+
+# git pull --rebase origin master
+
+# git fetch origin master
+
+
+================== Git Stash ====================
+# git stash			=> Save our changes and move to work on another file. Stash flag will apply a changes on last file only.
+# git apply 		=> Check which file is save [ stash ] for next work
+# git stash list
+# git stash drop	=> delete stash changes 
+# git stash -u		=> It will save all files in stash
+# git stash pop 		=> It will execute both command i.e. apply and drop. 
+# git stash save "message"
+# git stash show stash@{0}			=> check changes on specific file
+# git stash apply stash@{1}			=>	apply changes on specific file
+# git status
+# git stash drop stash@{1}
+# git stash clear 					=> It will delete all pending stash
+# git stash branch <newbranchname>	=> It will create new branch and switch in new branch
+
+# Git Reset --hard <commit_id>
+# Git revert <commit_id>
+# Git Stash
+# Git Stash list
+# Git Stash pop
+====================  Tagging ======================
+# git tag MyTag					=> It will create light weight tag
+# git tag --list
+# git tag --delete MyTag
+# git tag -a V1.0				=> It will create annotation tag
+# git tag --list
+# git tag v-1.0 -m "Release version 1.0"
+# git tag -a v.2.0 <commitID>
+# git push origin master --tags
+
+
+master / main				=> PROD			=> end			=> prod server
+
+feature						=> DevLop		=>				
+develop                    = > DevLop
+<developer_name>_date      = > DevLop
+
+----------------------------- GITHUB ------------------------------------------
+
+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
+
+git remote add origin https://github.com/<user_name>/<repo_name>.git
+git push -u origin main
+git remote -v
+
+git remote add origin https://github.com/<YOUR_USERNAME>/<YOUR_REPO>.git
+git remote set-url origin https://<YOUR_TOKEN>@github.com/<YOUR_USERNAME>/<YOUR_REPO>.git
+git push -u origin <branch_name>
+
+git remote remove origin
+
+git clone  https://github.com/<YOUR_USERNAME>/<YOUR_REPO>.git
+
+GitHub SSH 
+ssh -T git@github.com
+
+Contributor
+Branch Protection
+PR Raise
+fork

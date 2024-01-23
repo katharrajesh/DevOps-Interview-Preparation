@@ -1,0 +1,284 @@
+https://github.com/vsaini44/KubernetesRepo
+
+Pod
+ReplicaSet
+Deployment
+Namespace
+Services [ NodePort, ClusterPort, LoadBalancer ] 
+Manual Scheduling
+Taint & Tolerations
+monitor node & pod
+Rolling & Update
+
+
+======== Install Minikube on ubuntu 22.04 ==============
+sudo apt update
+sudo apt install -y ca-certificates curl gnupg lsb-release
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+sudo apt install docker-ce docker-ce-cli containerd.io -y
+sudo usermod -aG docker $USER
+newgrp docker
+sudo apt install -y curl wget apt-transport-https
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+minikube version
+curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+chmod +x kubectl
+sudo mv kubectl /usr/local/bin/
+minikube start --driver=docker --force
+kubectl version -o yaml
+minikube start --addons=ingress --cpus=2 --cni=flannel --install-addons=true --kubernetes-version=stable --memory=2200mb --force
+kubectl cluster-info
+kubectl get nodes
+kubectl get pods -A
+
+=============================  INSTALL K8S ON UBUNTU 20.04  =====================================
+Install Docker ----- execute on master and slave 
+sudo apt update
+sudo apt install docker.io -y
+sudo systemctl start docker && sudo systemctl enable docker
+sudo usermod -aG docker $USER && newgrp docker
+
+Install Kubernetes	--------- execute on master and slave 
+sudo apt install -y apt-transport-https curl
+
+Set hostnames
+sudo hostnamectl set-hostname kubernetes-master		----- On master server
+sudo hostnamectl set-hostname kubernetes-worker		----- On slave server
+
+Disable swap memory		--------- execute on master and slave 
+sudo swapoff -a
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
+sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+sudo apt install kubeadm kubelet kubectl kubernetes-cni -y
+
+
+Initialize Kubernetes master server		----- On master server
+sudo kubeadm init
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+Deploy a pod network		----- On master server
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/k8s-manifests/kube-flannel-rbac.yml			
+
+kubectl get pods --all-namespaces
+
+
+Join the Kubernetes cluster		----- On slave server   [ Below command might be different. So, Copy below command from master server ]
+sudo kubeadm join 192.168.1.220:6443 --token 1exb8s.2t4k3b5syfc3jfmo --discovery-token-ca-cert-hash sha256:72ad481cee4918cf2314738419356c9a402fb609263adad48c13797d0cba2341
+
+
+kubectl get nodes		---- On master server
+
+------ Deploying a service on Kubernetes cluster ---------
+kubectl run --image=nginx nginx-server --port=80 --env="DOMAIN=cluster"				-------- On master server
+kubectl expose deployment nginx-server --port=80 --name=nginx-http				-------- On master server
+
+sudo docker ps		------- On node server
+
+
+=============================  INSTALL K8S ON UBUNTU 20.04  =====================================
+
+*************  etcd  *****************
+
+ETCDCTL can interact with ETCD Server using 2 API versions - Version 2 and Version 3.  By default its set to use Version 2. Each version has different sets of commands.
+
+For example, ETCDCTL version 2 supports the following commands:
+
+# etcdctl backup
+# etcdctl cluster-health
+# etcdctl mk
+# etcdctl mkdir
+# etcdctl set
+
+Whereas the commands are different in version 3
+
+# etcdctl snapshot save 
+# etcdctl endpoint health
+# etcdctl get
+# etcdctl put
+
+To set the right version of API set the environment variable ETCDCTL_API command 
+
+# export ETCDCTL_API=3
+
+When API version is not set, it is assumed to be set to version 2. And version 3 commands listed above don't work. When API version is set to version 3, version 2 commands 
+listed above don't work.
+
+***********************************************************************************************************************************************************************
+YML Syntax
+
+apiVersion:									[ v1, apps/v1,  ]
+kind:										[ Pod, Service, ReplicationController, ReplicaSet, Deployment ]
+metadata:
+										[ name, labels ]
+spec:
+
+
+kubectl completion bash >auto_cmd.sh
+source auto_cmd.sh	=> It will show help enter kubectl and press tab
+vim
+:set coluorcoloumn
+
+
+# kubectl get node							=> List all node machine which is attach to master 
+# kubectl describe node kubemaster 			=> Check all information of node machine
+
+# kubectl cluster-info
+# kubectl create -f pod-definition.yml			=> It will create Pod
+# kubectl apply -f nginx.yaml
+# kubectl replace -f pod-definition.yaml
+# kubectl delete -f nginx.yaml
+# kubectl exec [pod-name] -it sh				=> Shelling into a Pod Container with kubectl exec
+# kubectl get pods								=> List pods
+# kubectl get pod -w
+# kubectl describe pod myapp-pod 				=> View details
+# kubectl get pods --show-labels
+# kubectl label pod pod2 city=delhi
+# kubectl get pods --show-labels
+# kubectl get pods -l city=delhi
+# kubectl annotate pod pod2 author=rajesh
+
+# kubectl run nginx --image=nginx				=> launch new pod
+# kubectl edit pod nginx						=> edit nginx pod
+# kubectl get pods -o wide						=> show details information
+# kubectl describe pod newpods-					=> show details information of specific pod
+# kubectl run redis --image=redis --dry-run=client -o yaml > pod.yaml 		=> It will create yaml file
+# kubectl run custom-nginx --image=nginx --port=8080
+# kubectl run redis --image=redis:alpine --labels=tier=db
+
+# kubectl get replicationcontroller
+# kubectl get pods
+
+# kubectl get replicaset
+# kubectl get pods
+# kubectl replace -f replicaset-definition.yaml						OR
+# kubectl scale --replicas=6 -f replicaset-definition.yaml			OR
+# kubectl scale --replicas=6 replicaset < metadata-name >
+
+# kubectl get all
+# kubectl create deployment --image=nginx nginx --dry-run=client -o yaml > nginx-deployment.yaml    		=> It will create yaml file
+# kubectl create deployment httpd-frontend --image=httpd:2.4-alpine
+# kubectl set image deployment nginx nginx=nginx:1.18
+# kubectl scale deployment httpd-frontend --replicas=6
+# kubectl delete deployment httpd-frontend
+# kubectl edit deployment httpd-frontend --record
+
+Namespaces
+# kubectl create namespace dev
+# kubectl config set-context $( kubectl config current-context ) --namespace=dev				=> Set dev namespace permenently 
+# kubectl config set-context $( kubectl config current-context ) --namespace=prod				=> Set prod namespace permenently  
+# kubectl create -f pod-definition.yaml						=> It will create a pod in default namespace
+# kubectl create -f pod-definition.yaml --namespace=dev 	=> It will create a pod in dev namespace
+# kubectl get pods --all-namespaces
+# kubectl get ns 			OR  # kubectl get namespace
+# kubectl -n research get pods --no-headers   	=> It will show pods within research namespace
+# kubectl get pods --namespace=dev
+
+------------------------------------
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev
+------------------------------------
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: compute-quota
+  namespace: dev
+spec:
+  hard:
+    pods: "10"
+    requests.cpu: "4"
+    requests.memory: 5Gi
+    limits.cpu: "10"
+    limits.memory: 10Gi	
+------------------------------------
+
+Service
+# kubectl get services			OR   # kubectl get svc
+# kubectl describe service kubernetes
+# kubectl expose deployment simple-webapp-deployment --name=webapp-service --target-port=8080 --type=NodePort --port=8080 --dry-run=client -o yaml >svc.yaml
+# kubectl expose pod redis --port=6379 --name redis-service --dry-run=client -o yaml
+
+Labels & Selector
+# kubectl get pods --selector app=App1
+# kubectl get all --selector env=prod
+# kubectl get all --selector env=prod,bu=finance,tier=frontend
+# kubectl get pods --show-labels
+# kubectl get pods -l env=dev --no-headers | wc -l
+
+Taint & Tolerations
+	Taint is set on node
+	Tolerations is set on pods
+# kubectl taint nodes node-name key=value:taint-effect			=> Syntax
+		taint-effect	=> NoSchedule	or  PreferNoSchedule   or 	NoExecute
+# kubectl taint nodes node1 app=blue:NoSchedule
+# kubectl describe node kubemaster | grep Taint				=> master node will not accept or launch pods on master node. This command is showing output. 
+# kubectl taint node master node-role.kubernetes.io/master:NoSchedule-		=> It will remove tain on master. Also, We can remove taint on node too.
+
+----- pod definition file  -----
+tolerations:
+- key: "app"
+  operator: "Equal"
+  value: "blue"
+  effect: "NoSchedule"
+
+Node Selector
+# kubectl label nodes <node-name>  <label-key>=<label-value>			=> Syntax
+# kubectl label nodes node01 size=Large
+# kubectl describe node node01			=> 	check label at top of output
+# kubectl get nodes node01 --show-labels
+
+Node Affinity Types
+Available:
+	requiredDuringSchedulingIgnoredDuringExecution
+	prefferedDuringSchedulingIgnoredDuringExecution
+
+Planned:
+	requiredDuringSchedulingRequiredDuringExecution
+	
+A quick note on editing PODs and Deployments
+	# kubectl get pod webapp -o yaml > my-new-pod.yaml
+	# vim my-new-pod.yaml	and do changes in yaml file then # kubectl delete pod webapp && # kubectl create -f my-new-pod.yaml
+								OR
+	# kubectl edit pod <pod name>			=> you will not able to edit it but it will create one temporary file just use it.
+	# kubectl delete pod webapp
+	# kubectl create -f /tmp/kubectl-edit-ccvrq.yaml
+
+
+	# kubectl edit deployment my-deployment			=> You can edit deployment easily. 
+	
+Daemon Sets
+# kind : DaemonSet
+# kubectl get daemonsets
+# kubectl describe daemonsets <daemonset-name>
+
+K8S Monitoring
+	Available tools : 1) Metrics Server		2) Prometheus		3) Elastic Stack 		4) Datadog		5) dynatrace
+
+minikube : minikube addons enable metrics-server
+others : git clone https://github.com/kubernetes-incubator/metrics-server.git
+			kubectl create -f deploy/1.8+/
+
+# kubectl top node
+# kubectl top pod
+# kubectl logs -f <pod_name>			
+# kubectl logs -f <pod_name> <container_name>				=> If multiple container in same pod.
+
+# kubectl logs -f <pod_name>
+
+Rolling & Update
+# kubectl create -f deployment.yaml --record
+# kubectl rollout status deployment/myapp-deployment
+# kubectl rollout history deployment/myapp-deployment
+# kubectl rollout undo deployment/myapp.deployment
+
+Swich from one cluster to another
+# kubectl config get-contexts    	=> List Available Clusters
+# kubectl config use-context <context-name>  	=> Switch to a Different Cluster
+# kubectl config current-context		=> kubectl config current-context

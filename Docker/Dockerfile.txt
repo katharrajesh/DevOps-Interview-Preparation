@@ -1,0 +1,38 @@
+# FROM 	=> creates a layer from the ubuntu:22.04 Docker image.
+# COPY	=> adds files from your Docker client's current directory.
+# RUN	=> builds your application with make.
+# CMD	=> specifies what command to run within the container.
+# LABEL	=> You can add labels to your image to help organize images by project, record licensing information, to aid in automation, 
+		   or for other reasons.
+# ENV	=> use ENV to update the PATH environment variable for the software your container installs
+# ADD	=> best use for ADD is local tar file auto-extraction into the image,
+# EXPOSE  => The EXPOSE instruction indicates the ports on which a container listens for connections.
+# ONBUILD => An ONBUILD command executes after the current Dockerfile build completes. ONBUILD executes in any 
+			 child image derived FROM the current image.
+# WORKDIR => should always use absolute paths for your WORKDIR
+# ENTRYPOINT => The best use for ENTRYPOINT is to set the image's main command, allowing that image to be run as though it was that command, 
+				and then use CMD as the default flags.
+
+ -- RUN vs CMD vs ENTRYPOINT --
+RUN executes commands and creates new image layers.
+CMD sets the command and its parameters to be executed by default after the container is started. However CMD can be replaced by docker run command line parameters.
+ENTRYPOINT configures the command to run when the container starts, similar to CMD from a functionality perspective.
+
+
+ -- Networking --
+Docker offers a mature networking model. There are three common Docker network types – 
+bridge networks, used within a single host, 
+overlay networks, for multi-host communication, and 
+macvlan networks which are used to connect Docker containers directly to host network interfaces. 
+
+-- Monitor container --
+docker stats
+
+
+
+FROM ubuntu:latest			# To download image	
+LABEL name="test-image"		# to identify use and check it using docker inspect image <img_nm>
+ENV var="test"				# declar environment variable
+RUN apt-get update && apt-get upgrade		# execute cmd using run
+ENTRYPOINT ["git"]			# Whenever container will launch firstly it will execute
+CMD ["--version"]			# second periority to execute this cmd

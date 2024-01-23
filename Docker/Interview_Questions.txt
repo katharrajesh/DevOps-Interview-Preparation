@@ -1,0 +1,47 @@
+## Docker ##
+1. How to monitor container and know which container will show exact utilization
+	=> # docker stats [container_name]
+	   # docker inspect [container_name]
+
+2. How to troubleshoot memory leak issue in container
+	=> Monitor Container Memory Usage, Check Container Logs [ # docker logs [container_name] ], Inspect Running Processes 
+		[ # docker exec -it [container_name] sh
+			top ]
+	
+3. What is UFS [ Union File System ]? 
+	=> a popular Union File System is OverlayFS (Overlay File System). OverlayFS is often used in conjunction with Docker and 
+		other containerization technologies. It allows you to layer multiple file systems on top of each other, typically a 
+		read-only base layer (like an official Docker image) and a read-write upper layer (container-specific changes).
+4. What is COW ?
+	=> Copy-On-Write (COW):
+		OverlayFS uses a copy-on-write strategy. When a file is modified, instead of modifying the original file, a new copy 
+		 is created in the upper layer. This ensures that changes made in the container do not affect the original image.
+		 
+5. What is difference between COPY & ADD
+	=> ADD can handle URLs and automatically extract compressed archives during the copy, whereas COPY only copies files or 
+		directories from the local file system.
+	
+6. How docker build image
+	=> # docker build -t your-image-name .
+
+7. What is RUN, CMD & ENTRYPOINT in dockerfile & its periority ?
+	=> RUN : The RUN instruction is used to execute commands during the image build. It is primarily used for installing 
+			 packages, updating software, downloading dependencies, and other tasks that are part of the image creation process. 
+			 Each RUN instruction creates a new layer in the Docker image.
+	   CMD : The CMD instruction provides the default command to run when a container is started. It can be overridden by 
+			 specifying a command when running the container. If a Dockerfile has multiple CMD instructions, only the last one 
+			 will take effect.
+	   ENTRYPOINT : The ENTRYPOINT instruction configures a container that will run as an executable. It is often used to 
+			 define a container as an executable script or application. Like CMD, it can be overridden by providing a command 
+			 when running the container. If both CMD and ENTRYPOINT are specified, the command specified in CMD will be passed 
+			 as arguments to the command specified in ENTRYPOINT.		 
+			 
+8. Explain Docker network
+	=> 1. Bridge Network: When you install Docker, it creates a default network bridge named bridge. By default, containers 
+			are attached to this bridge network.
+	   2. Host Network: By using the host network mode, a container shares the network namespace with the Docker host. 
+						It directly uses the network stack of the host, which can be useful for achieving better performance.
+	   3. Overlay Networks: In Docker Swarm mode (container orchestration), overlay networks are used to connect containers 
+				across multiple nodes in a cluster. Overlay networks enable seamless communication between containers running 
+				on different hosts.
+	   

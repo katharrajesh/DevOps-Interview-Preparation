@@ -1,0 +1,154 @@
+## Kubernetes ##
+1. What are the different components of Kubernetes Architecture
+	=> Master node and Worker node. The master node has the kube-controller-manager, kube-apiserver, kube-scheduler, etcd. 
+	   Whereas the worker node has kubelet, kube-proxy and container runtime running on each node.
+	   
+2. What is difference between Configmap & Secretes
+	=> ConfigMaps are intended for non-sensitive data, and Secrets are specifically designed for managing sensitive information
+		in a more secure manner. 
+	   Data Storage Format:
+		ConfigMap: ConfigMaps store data in plain text or as files. They are suitable for non-sensitive configuration data that 
+					doesn't require encryption.
+		Secrets: Secrets store data in Base64-encoded format. While Base64 encoding is not encryption, it provides a basic 
+				level of encoding to make it less human-readable.
+	
+	   Use Cases:
+		ConfigMap: Use ConfigMaps for storing configuration information that doesn't require encryption, such as application 
+					configuration files, environment variables, or other non-sensitive data.
+		Secrets: Use Secrets for storing sensitive data, such as API keys, database passwords, TLS certificates, or any 
+					information that should be kept confidential.	
+	
+       Updating and Reloading:
+		ConfigMap: Changes to ConfigMaps are immediately reflected in the pods that reference them. Pods can dynamically reload
+					configuration from ConfigMaps.
+		Secrets: Changes to Secrets also trigger updates in pods, but applications may need to be restarted or reloaded to pick
+					up the changes. Secrets are designed to be more persistent to avoid accidental updates.
+					
+3. What is daemonset, Static Pod & Deployments
+	=> DaemonSet: A DaemonSet ensures that a copy of a Pod runs on all (or a subset of) nodes in a cluster. It is used for 
+					deploying daemons or system-level services that need to run on every node. 
+	   Static Pod: Static Pods are managed directly by the Kubelet on a specific node, as opposed to being managed by 
+					the Kubernetes control plane. They are not included in the desired state of the cluster and are defined 
+					on a per-node basis.
+	   Deployment: A Deployment is a higher-level abstraction that provides declarative updates to applications. It allows you 
+					to describe the desired state for your application, and the Deployment controller changes the actual state 
+					to the desired state
+	   
+4. What is namespace ?
+	=>  a namespace is a way to logically divide cluster resources between multiple users, teams, or projects. It provides a 
+		scope for names, allowing different users or teams to share the same cluster while maintaining isolation.
+	
+5. What is node affinity ?
+	=> node affinity is a concept that allows you to influence the scheduling of pods onto nodes based on node labels. 
+		Node affinity specifies rules that constrain which nodes a pod is eligible to be scheduled based on node labels.
+	
+6. What is stateful & Stateless
+	=> A stateless application is one that does not store any data or state information on the local instance of the application.
+		Stateless applications are often deployed using Deployments or ReplicaSets. stateless applications include web servers, 
+		microservices, and other applications that don't rely on maintaining session state.
+	
+	   A stateful application, on the other hand, maintains some form of persistent state or data. StatefulSets provide 
+	    guarantees about the ordering and uniqueness of pods, making them suitable for applications that require stable network 
+		identities and persistent storage. Persistent Volumes (PVs) and Persistent Volume Claims (PVCs) are used to manage 
+		storage for stateful applications.
+				
+7. What are the type of volume in K8S 
+	=> PersistentVolume (PV) and PersistentVolumeClaim (PVC):
+	Persistent Volumes (PVs) are cluster-wide resources that represent physical storage, such as a disk on a node or a 
+		network-attached storage device.
+	Persistent Volume Claims (PVCs) are requests for storage by a pod. They are used to dynamically provision storage from 
+		available PVs.
+	PVs and PVCs are part of the Kubernetes Persistent Volume subsystem, providing a way to manage long-term storage in a cluster.
+		
+8. Suggest security points to client [ RBAC ]
+	=> Role-Based Access Control (RBAC), Network Policies, Pod Security Policies, Image Security, Secrets Management, Audit Logging,
+		Upgrade Regularly, Monitoring and Logging, Backup and Disaster Recovery
+	
+10. How to setup RBAC 
+	=> Role-Based Access Control (RBAC) is a security paradigm in Kubernetes that allows you to control access to resources 
+		based on the roles and permissions assigned to individual users, groups, or service accounts within the cluster. RBAC 
+		is a crucial component of Kubernetes security, providing a fine-grained and flexible way to manage access to the 
+		Kubernetes API and cluster resources.
+
+11. What is taint and toleration in k8s
+	=>  taints and tolerations are mechanisms used to control which nodes can (or cannot) run specific pods. These mechanisms 
+		are especially useful in scenarios where certain nodes in a cluster have unique hardware, software, or other characteristics
+		that make them suitable or unsuitable for certain workloads.
+	
+12. what are the types of controller manager
+	=> the Controller Manager is a core component that runs controllers to regulate the state of the cluster. Each controller 
+		is responsible for managing a specific aspect of the cluster's desired state. Manages the lifecycle of pods by ensuring
+		that a specified number of replicas for each pod are running at all times.		
+	
+13. What is init container in K8S
+	=> an init container is a special type of container that runs before the main containers in a Pod start. Init containers 
+		are used to perform setup or initialization tasks that need to be completed before the application containers start 
+		running. These tasks can include actions such as downloading files, setting up configuration, or preparing the 
+		environment.
+	
+14. Explain kublet
+	=>  the kubelet is a crucial component that runs on each node in the cluster. It is responsible for ensuring that 
+		containers are running in a Pod. The kubelet interacts with the container runtime (such as Docker or containerd) to 
+		manage the containers and communicates with the Kubernetes control plane to receive instructions and report the status 
+		of the node.
+	
+15. Tell me types of deployment strategy in K8S
+	=> Rolling Deployment:  In a rolling deployment, new pods are gradually rolled out, while the old pods are gradually 
+							terminated. This ensures a smooth transition without a sudden loss of service.
+	   Blue-Green Deployment:  Blue-Green deployments involve maintaining two separate environments (Blue and Green). At any 
+							given time, only one environment is live, while the other is idle.					
+	   Canary Deployment: In a Canary deployment, a small subset of users or traffic is directed to the new version of the 
+							application while the majority continues to use the old version. The rollout is gradually expanded 
+							if the new version proves to be stable.						
+	
+16. how to upgrade eks cluster and tell me process   
+	=> [ eksctl upgrade cluster --name <cluster_name> --version 1.23 --region= us-east-1 --approve ]
+
+17. Advantage & Disadvantage & difference between Blue-Green Deployment and Rolling Updates
+	=> Blue-Green Deployment:
+		Zero Downtime: Blue-Green deployments are designed to minimize or eliminate downtime. The new version of the 
+			application is deployed in an environment (Green) that is separate from the live environment (Blue). Once the new 
+			version is deemed ready, traffic is switched to the Green environment, reducing or eliminating downtime.
+		Easy Rollback: Rolling back to the previous version is straightforward. If issues are detected after the deployment, 
+			traffic can be switched back to the Blue environment quickly.
+	   
+	   Rolling Updates: 
+	    Gradual Rollout: Rolling updates allow for a gradual rollout of the new version. Pods are replaced one at a time, 
+			ensuring that a specified number of instances are always running.
+		Resource Efficiency: Rolling updates are more resource-efficient compared to Blue-Green deployments since they don't 
+			require maintaining separate environments.
+		
+18. When to choose setfulset instead of deployment ?  [ specially use for DB ]
+	=> If your application has stateful components, such as databases, that require stable network identities and persistent 
+		storage, StatefulSet is a better choice. It ensures that each pod in the set has a unique and stable hostname.
+	   If your application requires persistent storage that is associated with each pod and persists across pod rescheduling, 
+	    StatefulSet is designed to handle such scenarios.	
+
+19. What daemon set in k8s
+	DaemonSet manages the number of pod copies to run in a node. However, a deployment manages the number of pods and where they should be on nodes.
+	A DaemonSet ensures that all (or some) Nodes run a copy of a Pod. As nodes are added to the cluster, Pods are added to them. As nodes are removed from the cluster, those Pods are garbage collected. Deleting a DaemonSet will clean up the Pods it created.
+
+20. difference between replicaset and deployment
+	ReplicaSet : manage specified number of replicas of a pod are running at any given time.
+	Deployments :  manages the deployment of a new version of an application. It also helps us roll back to a previous version
+	
+21. zero downtime deployment
+	Rolling updates allow Deployments' update to take place with zero downtime by incrementally updating Pods instances with new ones. 
+	Blue-Green Deployment
+	
+22. What happens when a master fails in Kubernetes?
+	In a single master setup, the master node manages the etcd database, API server, controller manager and scheduler, along with the worker nodes. However, if that single master node fails, all the worker node fail as well and entire cluster will be lost.	
+	
+23. What is kublet
+	Kubelet is a part of the worker node. It is responsible for managing pods and their containers. It deals with pods specifications which are defined in YAML	
+	The kubelet is the primary "node agent" that runs on each node. It can register the node with the apiserver using one of: the hostname; a flag to override the hostname; or specific logic for a cloud provider. The kubelet works in terms of a PodSpec. A PodSpec is a YAML or JSON object that describes a pod.
+	
+24. What is the difference between deploy and StatefulSet?
+	Deployments are useful for managing stateless applications, while StatefulSets are useful for managing stateful applications that require stable network identities and persistent storage	
+	
+25. What is a StatefulSet in Kubernetes?
+	A StatefulSet is a controller that helps you deploy and scale groups of Kubernetes pods.
+	When using Kubernetes, most of the time you don’t care how your pods are scheduled, but sometimes you care that pods are deployed in order, that they have a persistent storage volume, or that they have a unique, stable network identifier across restarts and reschedules. In those cases, StatefulSets can help you accomplish your objective.
+	Each pod created by the StatefulSet has an ordinal value (0 through # replicas - 1) and a stable network ID (which is statefulsetname-ordinal) assigned to it. You can also create a VolumeClaimTemplate in the manifest file that will create a persistent volume for each pod. When pods are deployed by a StatefulSet, they will go in order from 0 to the final pod and require that each pod is Running and Ready before creating the next pod.	
+
+	

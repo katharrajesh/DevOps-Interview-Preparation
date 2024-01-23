@@ -1,0 +1,195 @@
+============ Install Docker ==============
+---
+- name: multi package
+  hosts: all
+  become: yes
+  tasks:
+    - name: Update repo
+      apt:
+        update_cache: yes
+
+    - name: Install Pre-Requisite
+      apt:
+        name: [ 'apt-transport-https', 'ca-certificates', 'curl', 'gnupg-agent', 'software-properties-common' ]
+        state: present
+
+    - name: Add key
+      apt_key:
+        url: https://download.docker.com/linux/debian/gpg
+        state: present
+
+    - name: Add repository
+      apt_repository:
+         repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
+         state: present
+
+    - name: Install Docker
+      apt:
+        name: [ 'docker-ce', 'docker-ce-cli', 'containerd.io' ]
+        state: present
+
+    - name: Restart Docker service
+      service:
+        name: docker
+        state: restarted
+
+
+============================ CommandLine Argument ===================================
+---
+- hosts: all
+  tasks:
+    - name: create file
+      copy:
+        content: This is a sample file with variable name var1, and the value of variable is {{ var1 }}
+        dest: /tmp/test.txt
+
+
+==> ansible-playbook extra_var.yaml --extra-vars "var1=Rajesh"
+
+=========================== Install Apache2 with custome port ========================
+---
+- name: Install Apache2
+  hosts: all
+  become: yes
+  vars_files:
+     - user.yaml
+  tasks:
+    - name: Install apache2 on node
+      apt:
+        name: apache2
+        state: present
+    - name: Copy index.html file
+      template:
+         src: index.html
+         dest: /var/www/html/index.html
+    - name: Replace port
+      replace:
+        path: /etc/apache2/sites-enabled/000-default.conf
+        regexp: "80"
+        replace: "9090"
+    - name: Replace ports.conf
+      replace:
+        path: /etc/apache2/ports.conf
+        regexp: "80"
+        replace: "9090"
+    - name: Restart service
+      service:
+        name: apache2
+        state: restarted
+		
+		
+=========================== Ansible Facts ========================		
+*** ignore_errors
+
+---
+- hosts: node3
+  tasks:
+    - name: Create blank file
+      copy:
+         content: "blank file"
+         dest: /ttomp/file1.txt
+      ignore_errors: yes
+
+    - name: Create file
+      file:
+        name: /tmp/name.txt
+        state: touch
+
+=========================== Ansible Debug/ Print Output ========================	
+---
+- hosts: node3
+  tasks:
+     - name: Execute IP Address
+       shell: ip r l
+       register: ipad
+     - name: Print IP Address
+       debug:
+          var: ipad.stdout
+
+===== Executing a specific task defined in your playbook on Ansible Controller Machine itself =======
+*** delegate
+---
+- hosts: node3
+  tasks:
+    - name: Create dir on node
+      file:
+        name: /tmp/dir1
+        state: directory
+
+    - name: Create file on localhost
+      copy:
+        content: "Create file on node"
+        dest: /tmp/node1
+      delegate_to: localhost
+	  
+*** local_action
+---
+- hosts: node3
+  tasks:
+    - name: create directory
+      file:
+        name: /tmp/demodir
+        state: directory
+    - name: create a file on ansible master
+      local_action:
+        module: copy
+        content: "Directory created in previous Task"
+        dest: /tmp/result.txt
+
+
+Lab-11  Creating Playbook for Tomcat installation and hosting sample application
+
+Steps to Manually Install are as below:
+Pre-req:
+default-jdk package should be present
+wget package should be present
+/opt/tomcat directory should exists
+
+Now download tomcat tar file from https://archive.apache.org/dist/tomcat/tomcat-8/v8.5.59/bin/apache-tomcat-8.5.59.tar.gz and copy it under /opt/tomcat directory (get_url)
+Extract the downloaded tomcat file  (unarchive)
+Change the permissions to 777 of startup.sh shutdown.sh catalina.sh under /opt/tomcat/apache-tomcat-8.5.59/bin/ directory
+Now download the sample application from https://tomcat.apache.org/tomcat-8.0-doc/appdev/sample/sample.war and place it under /opt/tomcat/apache-tomcat-8.5.59/webapps/
+Start the tomcat services /opt/tomcat/apache-tomcat-8.5.59/bin/catalina.sh start		
+
+Answer:
+
+---
+- hosts: node1
+  become: yes
+  tasks:
+    - name: Ensuring Java is present
+      apt:
+        name: ['default-jdk','wget']
+        update_cache: true
+        state: present
+    - name: Ensuring directory existense
+      file:
+        name: /opt/tomcat
+        state: directory
+    - name: Downloading tomcat tar
+      get_url:
+        url: "https://archive.apache.org/dist/tomcat/tomcat-8/v8.5.59/bin/apache-tomcat-8.5.59.tar.gz"
+        dest: /opt/tomcat/
+    - name: Extracting the package
+      unarchive:
+        src: /opt/tomcat/apache-tomcat-8.5.59.tar.gz
+        dest: /opt/tomcat
+        remote_src: true
+    - name: Setting Permissions
+      file:
+        name: "/opt/tomcat/apache-tomcat-8.5.59/bin/{{ item }}"
+        mode: 0777
+      loop:
+        - catalina.sh
+        - shutdown.sh
+        - startup.sh
+    - name: Download the sample app
+      get_url:
+        url: "https://tomcat.apache.org/tomcat-8.0-doc/appdev/sample/sample.war"
+        dest: /opt/tomcat/apache-tomcat-8.5.59/webapps/
+    - name: Starting tomcat
+      shell: nohup /opt/tomcat/apache-tomcat-8.5.59/bin/catalina.sh start &
+
+=========================== Ansible Roll ========================
+https://gitlab.com/synechron-ansible-automation-jan-2022/reference-guide/-/wikis/Roles
+
