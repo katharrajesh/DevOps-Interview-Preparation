@@ -1,0 +1,48 @@
+What is the difference between Shell and Python?
+    Python: Python is based on object-oriented programming.
+            It is specially designed for web and app development.
+            It supports OOP and allow users to easily and neatly break problems.
+            It require third party programs to be installed
+            It is better to use python when script is larger
+    Bash : Bash is a software replacement for the original Bourne shell.
+           It is found on Linux distributions and macOS.
+           Bash does not support OOP and it only understands text
+           It does not require any third party apps/programs to be installed
+           For smaller script Bash is good.        
+
+What is the meaning of REPL in Python ?
+    REPL => Read-Eval-Print Loop
+    A computer environment where user inputs are read and evaluated, and then the results are returned to the user.
+
+What is PIPY ?
+    Python Package Index    
+
+Data Types in Python ?
+    Numeric datatype: int, float, complex
+    String datatype: string
+    Boolean datatype: True or False
+    Sequence datatype: list, tuple
+    Mapping datatype: dictionary
+
+Keywords in Python
+    1. and              2. or               3. not
+    4. if               5. else             6. elif
+    7. while            8. for              9. in
+    10. try             11. except          12. finally
+    13. def             14. return          15. class
+    16. import          17. from            18. as
+    19. True            20. False           21. None
+    22. is              23. lambda          24. with
+    25. global          26. nonlocal
+
+Typecasting 
+    1. Explicit Conversion
+    2. Implicit Conversion
+
+List out inbuild function in Python
+    1. split    [ string.split("_")]    
+    2. len
+    3. upper
+    4. lower
+    5. strip
+    6. replace
