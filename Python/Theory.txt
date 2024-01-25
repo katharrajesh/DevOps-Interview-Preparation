@@ -47,13 +47,27 @@ List out inbuild function in Python
     5. strip
     6. replace
 
- What is Virtual environment in python ?
+What is Virtual environment in python ?
     It allows end-users to install and manage their own set of packages that are independent of those provided by the system or used by other projects.
     # python3 -m venv <env_name>  => It will created Virtual environment
     # source <env_name>/bin/activate   => It will switch you in Virtual environment.
     # deactivate   => it will exit from Virtual environment
 
- Commandline Argument in Python
+Commandline Argument in Python
     We need to use import sys module for it. Using sys.argv[<arg_number>], We can call cmd Argument. 
     ex. init(sys.argv[1]) OR float(sys.argv[1]). It will take string by default.
+
+Environment Variable
+    import os   module in python script and declare Variable using # export command. 
+    print it using print(os.getenv("<env_variable>"))
+
+Operator in Python
+    1. Arithmatic Operator [addition, Substraction, Division, Multiplication]
+    2. Assignment Operator [=]
+    3. Relational Operator [True OR False]
+    4. Logical Operator [and, or & not]
+    5. Identity Operator [is & is not]
+    6. Membership Operator [in & not in]
+    7. Bitwise Operator [AND, OR, XOR etc]
+
     
