@@ -15,7 +15,7 @@ What is the meaning of REPL in Python ?
     A computer environment where user inputs are read and evaluated, and then the results are returned to the user.
 
 What is PIPY ?
-    Python Package Index    
+    Python Package Index. We can install python Package using # pip install <pkg_name> command.
 
 Data Types in Python ?
     Numeric datatype: int, float, complex
@@ -46,3 +46,14 @@ List out inbuild function in Python
     4. lower
     5. strip
     6. replace
+
+ What is Virtual environment in python ?
+    It allows end-users to install and manage their own set of packages that are independent of those provided by the system or used by other projects.
+    # python3 -m venv <env_name>  => It will created Virtual environment
+    # source <env_name>/bin/activate   => It will switch you in Virtual environment.
+    # deactivate   => it will exit from Virtual environment
+
+ Commandline Argument in Python
+    We need to use import sys module for it. Using sys.argv[<arg_number>], We can call cmd Argument. 
+    ex. init(sys.argv[1]) OR float(sys.argv[1]). It will take string by default.
+    
