@@ -70,4 +70,19 @@ Operator in Python
     6. Membership Operator [in & not in]
     7. Bitwise Operator [AND, OR, XOR etc]
 
-    
+difference between list and tupples ?
+    list: It is declare using []. You can add or remove element.
+            example: s3_list = [ "one", "two", "Threee" ]
+                     s3_list.append("Four")
+                     print(s3_list)             => It will print four bucket name
+
+                     s3_list.remove(two)
+                     print(s3_list)         => It will remove 2nd bucket name
+    tupples: Its is declare using (). You can add or remove element
+            example: s3_list = [ "one", "two", "Threee" ]
+                     s3_list.append("Four")
+                     print(s3_list)             => It will give error and not print four bucket name. So, you can not add more element.
+                     
+                     s3_list.remove(two)
+                     print(s3_list)         => It will not remove 2nd bucket name                        
+                     
