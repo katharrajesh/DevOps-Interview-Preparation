@@ -71,14 +71,14 @@ Operator in Python
     7. Bitwise Operator [AND, OR, XOR etc]
 
 difference between list and tupples ?
-    list: It is declare using []. You can add or remove element.
+    list: It is declare using []. You can add or remove element. list will be use for flexible parameter.
             example: s3_list = [ "one", "two", "Threee" ]
                      s3_list.append("Four")
                      print(s3_list)             => It will print four bucket name
 
                      s3_list.remove(two)
                      print(s3_list)         => It will remove 2nd bucket name
-    tupples: Its is declare using (). You can add or remove element
+    tupples: Its is declare using (). You can add or remove element. tuple will be when we have fix require list and not require to modify in future.
             example: s3_list = [ "one", "two", "Threee" ]
                      s3_list.append("Four")
                      print(s3_list)             => It will give error and not print four bucket name. So, you can not add more element.
